@@ -36,4 +36,16 @@ class AppTest extends TestCase
             $this->getFixturePath('empty.s')
         );
     }
+
+    #[Test]
+    public function compilesTextOnlyScript(): void
+    {
+        $app = new App([1 => $this->getFixturePath('text_only.php')]);
+        $app->compile();
+
+        $this->assertFileEquals(
+            $this->getFixturePath('text_only.expected.s'),
+            $this->getFixturePath('text_only.s')
+        );
+    }
 }
