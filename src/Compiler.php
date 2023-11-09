@@ -7,6 +7,9 @@ use PhpParser\Node\Stmt\InlineHTML;
 
 class Compiler
 {
+    private CodeBuilder $builder;
+    private bool $hasDataSection = false;
+    private bool $hasInlineHtml = false;
 
     /**
      * @param Stmt[] $ast
@@ -17,30 +20,50 @@ class Compiler
 
     public function compile(): string
     {
-        $builder = new CodeBuilder();
+        $this->builder = new CodeBuilder();
 
-        $hasInlineHtml = false;
+        $this->appendDataSection();
+        $this->appendCodeSection();
+
+        return $this->builder->getCode();
+    }
+
+    private function appendDataSection(): void
+    {
         foreach ($this->ast as $stmt) {
             if ($stmt instanceof InlineHTML) {
-                $hasInlineHtml = true;
-                $builder
+                $this->hasDataSection = true;
+                $this->hasInlineHtml = true;
+                $this->builder
                     ->addSection('.data')
                     ->addTextData('html_inline', $stmt->value);
             }
         }
+    }
 
-        if ($hasInlineHtml) {
-            $builder
+    private function appendCodeSection(): void
+    {
+        $this->appendCodeSectionHeader();
+        $this->appendCodeSectionBody();
+    }
+
+    private function appendCodeSectionHeader(): void
+    {
+        if ($this->hasDataSection) {
+            $this->builder
                 ->addEmptyLine()
-                ->addSection('.text')
-                ->beginEntryPoint('_start')
+                ->addSection('.text');
+        }
+        $this->builder->beginEntryPoint('_start');
+    }
+
+    private function appendCodeSectionBody(): void
+    {
+        if ($this->hasInlineHtml) {
+            $this->builder
                 ->addWriteSyscall('html_inline')
                 ->addEmptyLine();
-        } else {
-            $builder->beginEntryPoint('_start');
         }
-        $builder->addExitSyscall();
-
-        return $builder->getCode();
+        $this->builder->addExitSyscall();
     }
 }
