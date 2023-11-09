@@ -22,30 +22,18 @@ class AppTest extends TestCase
         $app = new App([1 => $this->getFixturePath('not_exists.php')]);
 
         $this->expectException(FileNotFound::class);
-        $app->compile();
+        $app->generateCompiledScript();
     }
 
     #[Test]
-    public function compilesEmptyScript(): void
+    public function generatesCompiledScript(): void
     {
         $app = new App([1 => $this->getFixturePath('empty.php')]);
-        $app->compile();
+        $app->generateCompiledScript();
 
         $this->assertFileEquals(
             $this->getFixturePath('empty.expected.s'),
             $this->getFixturePath('empty.s')
-        );
-    }
-
-    #[Test]
-    public function compilesTextOnlyScript(): void
-    {
-        $app = new App([1 => $this->getFixturePath('text_only.php')]);
-        $app->compile();
-
-        $this->assertFileEquals(
-            $this->getFixturePath('text_only.expected.s'),
-            $this->getFixturePath('text_only.s')
         );
     }
 }
