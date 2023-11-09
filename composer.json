@@ -1,0 +1,22 @@
+{
+    "name": "jaunas/php-compiler",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Jaunas\\PhpCompiler\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Jaunas\\PhpCompiler\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "nikic/php-parser": "^4.17"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.4"
+    }
+}

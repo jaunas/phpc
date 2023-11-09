@@ -1,0 +1,11 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - UID=${UID}
+        - GID=${GID}
+    user: "${UID}:${GID}"
+    volumes:
+      - .:/usr/src/php-compiler
