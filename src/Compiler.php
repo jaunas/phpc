@@ -12,6 +12,8 @@ class Compiler
     private CodeBuilder $builder;
     private array $data = [];
     private array $codeParts = [];
+    private int $htmlInlineCount = 0;
+    private int $echoCount = 0;
 
     /**
      * @param Stmt[] $ast
@@ -24,6 +26,7 @@ class Compiler
     {
         $this->builder = new CodeBuilder();
 
+        $this->processAst();
         $this->appendDataSection();
         $this->appendCodeSection();
 
@@ -34,24 +37,19 @@ class Compiler
         return !empty($this->data);
     }
 
-    private function appendDataSection(): void
+    private function processAst(): void
     {
-        $echoCount = 0;
         foreach ($this->ast as $stmt) {
             if ($stmt instanceof InlineHTML) {
-                $this->data['html_inline'] = $stmt->value;
-                $this->codeParts[] = (new CodeBuilder())->addWriteSyscall('html_inline');
+                $this->addHtmlInline($stmt);
             } else if ($stmt instanceof Echo_) {
-                $expr = $stmt->exprs[0];
-                if ($expr instanceof String_) {
-                    $label = 'echo' . $echoCount;
-                    $this->data[$label] = $expr->value;
-                    $this->codeParts[] = (new CodeBuilder())->addWriteSyscall($label);
-                    $echoCount++;
-                }
+                $this->addEcho($stmt);
             }
         }
+    }
 
+    private function appendDataSection(): void
+    {
         if ($this->hasDataSection()) {
             $this->builder->addSection('.data');
             foreach ($this->data as $label => $value) {
@@ -82,5 +80,24 @@ class Compiler
             $this->builder->addCodeBuilder($codePart);
         }
         $this->builder->addExitSyscall();
+    }
+
+    private function addHtmlInline(InlineHTML $stmt): void
+    {
+        $label = 'html_inline' . $this->htmlInlineCount;
+        $this->data[$label] = $stmt->value;
+        $this->codeParts[] = (new CodeBuilder())->addWriteSyscall($label);
+        $this->htmlInlineCount++;
+    }
+
+    private function addEcho(Echo_ $stmt): void
+    {
+        $expr = $stmt->exprs[0];
+        if ($expr instanceof String_) {
+            $label = 'echo' . $this->echoCount;
+            $this->data[$label] = $expr->value;
+            $this->codeParts[] = (new CodeBuilder())->addWriteSyscall($label);
+            $this->echoCount++;
+        }
     }
 }
