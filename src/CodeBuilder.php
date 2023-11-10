@@ -15,7 +15,8 @@ class CodeBuilder
 
     private function addLine(string $line): self
     {
-        $this->code .= ($this->indent ? '  ' : '') . $line . "\n";
+        $indent = $this->indent && !(empty($line)) ? '  ' : '';
+        $this->code .= sprintf("%s%s\n", $indent, $line);
         return $this;
     }
 
@@ -33,26 +34,23 @@ class CodeBuilder
 
     public function beginEntryPoint(string $label): self
     {
-        $this
+        return $this
             ->addLine(sprintf('.globl %s', $label))
             ->addLine(sprintf('%s:', $label))
             ->setIndent();
-        return $this;
     }
 
     public function addExitSyscall(): self
     {
-        $this
+        return $this
             ->addLine('mov $60, %rax')
             ->addLine('mov $0, %rdi')
             ->addLine('syscall');
-        return $this;
     }
 
     public function addSection(string $section): self
     {
-        $this->addLine(sprintf('.section %s', $section));
-        return $this;
+        return $this->addLine(sprintf('.section %s', $section));
     }
 
     public function addTextData(string $label, string $text): self
@@ -74,23 +72,29 @@ class CodeBuilder
 
     public function addWriteSyscall(string $textLabel): self
     {
-        $this
+        return $this
             ->addLine('mov $1, %rax')
             ->addLine('mov $1, %rdi')
             ->addLine(sprintf("lea %s(%%rip), %%rsi", $textLabel))
             ->addLine(sprintf("mov $%s_len, %%rdx", $textLabel))
             ->addLine('syscall');
-        return $this;
     }
 
     public function addEmptyLine(): self
     {
-        $oldIndent = $this->indent;
-        $this->indent = false;
+        return $this->addLine('');
+    }
 
-        $this->addLine('');
+    public function addCodeBuilder(CodeBuilder $innerBuilder): self
+    {
+        $code = $innerBuilder->getCode();
+        if (empty($code)) {
+            return $this;
+        }
 
-        $this->indent = $oldIndent;
+        foreach (explode("\n", $code) as $line) {
+            $this->addLine($line);
+        }
         return $this;
     }
 }

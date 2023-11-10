@@ -143,4 +143,54 @@ syscall
 
         $this->assertEquals(".globl entrypoint\nentrypoint:\n\n", $code);
     }
+
+    #[Test]
+    public function addEmptyCodeBuilderGetCode(): void
+    {
+        $outerBuilder = new CodeBuilder();
+        $innerBuilder = new CodeBuilder();
+        $code = $outerBuilder
+            ->addCodeBuilder($innerBuilder)
+            ->getCode();
+
+        $this->assertEmpty($code);
+    }
+
+    #[Test]
+    public function addCodeBuilderGetCode(): void
+    {
+        $expectedCode = '.globl entrypoint
+entrypoint:
+  mov $1, %rax
+  mov $1, %rdi
+  lea ascii_data0(%rip), %rsi
+  mov $ascii_data0_len, %rdx
+  syscall
+
+  mov $1, %rax
+  mov $1, %rdi
+  lea ascii_data1(%rip), %rsi
+  mov $ascii_data1_len, %rdx
+  syscall
+
+  mov $60, %rax
+  mov $0, %rdi
+  syscall
+';
+
+        $innerBuilder = new CodeBuilder();
+        $innerBuilder
+            ->addWriteSyscall('ascii_data0')
+            ->addEmptyLine()
+            ->addWriteSyscall('ascii_data1');
+
+        $outerBuilder = new CodeBuilder();
+        $code = $outerBuilder
+            ->beginEntryPoint('entrypoint')
+            ->addCodeBuilder($innerBuilder)
+            ->addExitSyscall()
+            ->getCode();
+
+        $this->assertEquals($expectedCode, $code);
+    }
 }
