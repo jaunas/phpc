@@ -36,6 +36,7 @@ class Compiler
 
     private function appendDataSection(): void
     {
+        $echoCount = 0;
         foreach ($this->ast as $stmt) {
             if ($stmt instanceof InlineHTML) {
                 $this->data['html_inline'] = $stmt->value;
@@ -43,8 +44,10 @@ class Compiler
             } else if ($stmt instanceof Echo_) {
                 $expr = $stmt->exprs[0];
                 if ($expr instanceof String_) {
-                    $this->data['echo'] = $expr->value;
-                    $this->codeParts[] = (new CodeBuilder())->addWriteSyscall('echo');
+                    $label = 'echo' . $echoCount;
+                    $this->data[$label] = $expr->value;
+                    $this->codeParts[] = (new CodeBuilder())->addWriteSyscall($label);
+                    $echoCount++;
                 }
             }
         }

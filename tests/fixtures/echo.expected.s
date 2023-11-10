@@ -1,15 +1,15 @@
 .section .data
-echo:
+echo0:
   .ascii "Example text\n"
-echo_len = . - echo
+echo0_len = . - echo0
 
 .section .text
 .globl _start
 _start:
   mov $1, %rax
   mov $1, %rdi
-  lea echo(%rip), %rsi
-  mov $echo_len, %rdx
+  lea echo0(%rip), %rsi
+  mov $echo0_len, %rdx
   syscall
 
   mov $60, %rax
