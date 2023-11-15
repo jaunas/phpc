@@ -27,7 +27,7 @@ class App
         file_put_contents($this->getCompiledFilename(), $compiler->compile());
     }
 
-    public function getCompiledFilename(): string
+    private function getCompiledFilename(): string
     {
         return dirname($this->filename) . '/' . pathinfo($this->filename, PATHINFO_FILENAME) . '.s';
     }
