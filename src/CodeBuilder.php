@@ -71,11 +71,15 @@ class CodeBuilder
         return $this;
     }
 
-    public function addPrintfCall(string $textLabel): self
+    public function addPrintfCall(string $textLabel, int $arg = null): self
     {
-        return $this
-            ->addLine(sprintf("lea %s(%%rip), %%rdi", $textLabel))
-            ->addLine('call printf');
+        $this->addLine(sprintf("lea %s(%%rip), %%rdi", $textLabel));
+
+        if ($arg !== null) {
+            $this->addLine(sprintf("mov \$%d, %%rsi", $arg));
+        }
+
+        return $this->addLine('call printf');
     }
 
     public function addEmptyLine(): self

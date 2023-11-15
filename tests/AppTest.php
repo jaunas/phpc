@@ -46,22 +46,13 @@ class AppTest extends TestCase
     #[DataProvider('scriptNameProvider')]
     public function outputsMatch(string $scriptName): void
     {
-        $expectedOutput = exec(sprintf('php %s', $this->getScriptPath($scriptName, 'php')));
-        $output = $this->getCompiledOutput($scriptName);
-        $this->assertEquals($expectedOutput, $output);
-    }
+        $phpScriptFile = $this->getScriptPath($scriptName, 'php');
+        $asmScriptPath = $this->getScriptPath($scriptName, 'expected.s');
 
-    private function getCompiledOutput(string $scriptName): string
-    {
-        $phpScriptPath = $this->getScriptPath($scriptName, 'php');
-        $asmScriptPath = $this->getScriptPath($scriptName, 's');
-
-        $app = new App([1 => $phpScriptPath]);
-        $app->generateCompiledScript();
+        $expectedOutput = exec(sprintf('php %s', $phpScriptFile));
         $output = exec(sprintf('gcc -nostartfiles %s -o tmp && ./tmp', $asmScriptPath));
-        unlink($asmScriptPath);
         unlink(__DIR__ . '/tmp');
 
-        return $output;
+        $this->assertEquals($expectedOutput, $output);
     }
 }

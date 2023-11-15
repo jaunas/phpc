@@ -111,6 +111,19 @@ class CodeBuilderTest extends TestCase
     }
 
     #[Test]
+    public function addPrintfCallWithArgGetCode(): void
+    {
+        $expectedCode = "lea message(%rip), %rdi\nmov $31415926, %rsi\ncall printf\n";
+
+        $builder = new CodeBuilder();
+        $code = $builder
+            ->addPrintfCall('message', 31415926)
+            ->getCode();
+
+        $this->assertEquals($expectedCode, $code);
+    }
+
+    #[Test]
     public function addEmptyLineGetCode(): void
     {
         $builder = new CodeBuilder();

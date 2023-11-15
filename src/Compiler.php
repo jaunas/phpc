@@ -2,6 +2,7 @@
 
 namespace Jaunas\PhpCompiler;
 
+use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Echo_;
@@ -98,6 +99,9 @@ class Compiler
             $this->data[$label] = $expr->value;
             $this->codeParts[] = (new CodeBuilder())->addPrintfCall($label);
             $this->echoCount++;
+        } else if ($expr instanceof LNumber) {
+            $this->data['int2str'] = '%lld';
+            $this->codeParts[] = (new CodeBuilder())->addPrintfCall('int2str', $expr->value);
         }
     }
 }
