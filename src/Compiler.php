@@ -79,14 +79,14 @@ class Compiler
         foreach ($this->codeParts as $codePart) {
             $this->builder->addCodeBuilder($codePart);
         }
-        $this->builder->addExitSyscall();
+        $this->builder->addExitCall();
     }
 
     private function addHtmlInline(InlineHTML $stmt): void
     {
         $label = 'html_inline' . $this->htmlInlineCount;
         $this->data[$label] = $stmt->value;
-        $this->codeParts[] = (new CodeBuilder())->addWriteSyscall($label);
+        $this->codeParts[] = (new CodeBuilder())->addPrintfCall($label);
         $this->htmlInlineCount++;
     }
 
@@ -96,7 +96,7 @@ class Compiler
         if ($expr instanceof String_) {
             $label = 'echo' . $this->echoCount;
             $this->data[$label] = $expr->value;
-            $this->codeParts[] = (new CodeBuilder())->addWriteSyscall($label);
+            $this->codeParts[] = (new CodeBuilder())->addPrintfCall($label);
             $this->echoCount++;
         }
     }

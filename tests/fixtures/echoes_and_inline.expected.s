@@ -1,53 +1,32 @@
 .section .data
 html_inline0:
-  .ascii "Inline header\n"
-html_inline0_len = . - html_inline0
+  .asciz "Inline header\n"
 echo0:
-  .ascii "Echo in a new line\n"
-echo0_len = . - echo0
+  .asciz "Echo in a new line\n"
 html_inline1:
-  .ascii "Mixed "
-html_inline1_len = . - html_inline1
+  .asciz "Mixed "
 echo1:
-  .ascii "echo"
-echo1_len = . - echo1
+  .asciz "echo"
 html_inline2:
-  .ascii " with inline\n"
-html_inline2_len = . - html_inline2
+  .asciz " with inline\n"
 
 .section .text
 .globl _start
 _start:
-  mov $1, %rax
-  mov $1, %rdi
-  lea html_inline0(%rip), %rsi
-  mov $html_inline0_len, %rdx
-  syscall
+  lea html_inline0(%rip), %rdi
+  call printf
 
-  mov $1, %rax
-  mov $1, %rdi
-  lea echo0(%rip), %rsi
-  mov $echo0_len, %rdx
-  syscall
+  lea echo0(%rip), %rdi
+  call printf
 
-  mov $1, %rax
-  mov $1, %rdi
-  lea html_inline1(%rip), %rsi
-  mov $html_inline1_len, %rdx
-  syscall
+  lea html_inline1(%rip), %rdi
+  call printf
 
-  mov $1, %rax
-  mov $1, %rdi
-  lea echo1(%rip), %rsi
-  mov $echo1_len, %rdx
-  syscall
+  lea echo1(%rip), %rdi
+  call printf
 
-  mov $1, %rax
-  mov $1, %rdi
-  lea html_inline2(%rip), %rsi
-  mov $html_inline2_len, %rdx
-  syscall
+  lea html_inline2(%rip), %rdi
+  call printf
 
-  mov $60, %rax
   mov $0, %rdi
-  syscall
+  call exit

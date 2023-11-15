@@ -28,29 +28,24 @@ class CodeBuilderTest extends TestCase
     }
 
     #[Test]
-    public function exitSyscallGetCode(): void
+    public function exitCallGetCode(): void
     {
         $builder = new CodeBuilder();
         $code = $builder
-            ->addExitSyscall()
+            ->addExitCall()
             ->getCode();
-        $this->assertEquals("mov $60, %rax\nmov $0, %rdi\nsyscall\n", $code);
+        $this->assertEquals("mov $0, %rdi\ncall exit\n", $code);
     }
 
     #[Test]
     public function entryPointAndExitSyscallGetCode(): void
     {
-        $expectedCode = '.globl _start
-_start:
-  mov $60, %rax
-  mov $0, %rdi
-  syscall
-';
+        $expectedCode = ".globl _start\n_start:\n  mov \$0, %rdi\n  call exit\n";
 
         $builder = new CodeBuilder();
         $code = $builder
             ->beginEntryPoint('_start')
-            ->addExitSyscall()
+            ->addExitCall()
             ->getCode();
         $this->assertEquals($expectedCode, $code);
     }
@@ -72,7 +67,7 @@ _start:
         $code = $builder
             ->addTextData('message', 'Example text')
             ->getCode();
-        $this->assertEquals("message:\n  .ascii \"Example text\"\nmessage_len = . - message\n", $code);
+        $this->assertEquals("message:\n  .asciz \"Example text\"\n", $code);
     }
 
     #[Test]
@@ -82,8 +77,7 @@ _start:
   .ascii "Example text\n"
   .ascii "With many lines\n"
   .ascii "\n"
-  .ascii "And extra spaces"
-message_len = . - message
+  .asciz "And extra spaces"
 ';
 
         $builder = new CodeBuilder();
@@ -100,22 +94,17 @@ message_len = . - message
         $code = $builder
             ->addTextData('message', "Example text\n")
             ->getCode();
-        $this->assertEquals("message:\n  .ascii \"Example text\\n\"\nmessage_len = . - message\n", $code);
+        $this->assertEquals("message:\n  .asciz \"Example text\\n\"\n", $code);
     }
 
     #[Test]
-    public function addWriteSyscallGetCode(): void
+    public function addPrintfCallGetCode(): void
     {
-        $expectedCode = 'mov $1, %rax
-mov $1, %rdi
-lea message(%rip), %rsi
-mov $message_len, %rdx
-syscall
-';
+        $expectedCode = "lea message(%rip), %rdi\ncall printf\n";
 
         $builder = new CodeBuilder();
         $code = $builder
-            ->addWriteSyscall('message')
+            ->addPrintfCall('message')
             ->getCode();
 
         $this->assertEquals($expectedCode, $code);
@@ -161,34 +150,27 @@ syscall
     {
         $expectedCode = '.globl entrypoint
 entrypoint:
-  mov $1, %rax
-  mov $1, %rdi
-  lea ascii_data0(%rip), %rsi
-  mov $ascii_data0_len, %rdx
-  syscall
+  lea ascii_data0(%rip), %rdi
+  call printf
 
-  mov $1, %rax
-  mov $1, %rdi
-  lea ascii_data1(%rip), %rsi
-  mov $ascii_data1_len, %rdx
-  syscall
+  lea ascii_data1(%rip), %rdi
+  call printf
 
-  mov $60, %rax
   mov $0, %rdi
-  syscall
+  call exit
 ';
 
         $innerBuilder = new CodeBuilder();
         $innerBuilder
-            ->addWriteSyscall('ascii_data0')
+            ->addPrintfCall('ascii_data0')
             ->addEmptyLine()
-            ->addWriteSyscall('ascii_data1');
+            ->addPrintfCall('ascii_data1');
 
         $outerBuilder = new CodeBuilder();
         $code = $outerBuilder
             ->beginEntryPoint('entrypoint')
             ->addCodeBuilder($innerBuilder)
-            ->addExitSyscall()
+            ->addExitCall()
             ->getCode();
 
         $this->assertEquals($expectedCode, $code);

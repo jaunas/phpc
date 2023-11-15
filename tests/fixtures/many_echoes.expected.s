@@ -1,35 +1,22 @@
 .section .data
 echo0:
-  .ascii "Example text\n"
-echo0_len = . - echo0
+  .asciz "Example text\n"
 echo1:
-  .ascii "No end line"
-echo1_len = . - echo1
+  .asciz "No end line"
 echo2:
-  .ascii " continue here\n"
-echo2_len = . - echo2
+  .asciz " continue here\n"
 
 .section .text
 .globl _start
 _start:
-  mov $1, %rax
-  mov $1, %rdi
-  lea echo0(%rip), %rsi
-  mov $echo0_len, %rdx
-  syscall
+  lea echo0(%rip), %rdi
+  call printf
 
-  mov $1, %rax
-  mov $1, %rdi
-  lea echo1(%rip), %rsi
-  mov $echo1_len, %rdx
-  syscall
+  lea echo1(%rip), %rdi
+  call printf
 
-  mov $1, %rax
-  mov $1, %rdi
-  lea echo2(%rip), %rsi
-  mov $echo2_len, %rdx
-  syscall
+  lea echo2(%rip), %rdi
+  call printf
 
-  mov $60, %rax
   mov $0, %rdi
-  syscall
+  call exit

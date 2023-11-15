@@ -40,12 +40,11 @@ class CodeBuilder
             ->setIndent();
     }
 
-    public function addExitSyscall(): self
+    public function addExitCall(): self
     {
         return $this
-            ->addLine('mov $60, %rax')
             ->addLine('mov $0, %rdi')
-            ->addLine('syscall');
+            ->addLine('call exit');
     }
 
     public function addSection(string $section): self
@@ -61,23 +60,22 @@ class CodeBuilder
         $this
             ->addLine(sprintf("%s:", $label))
             ->setIndent();
-        foreach (explode("\n", $text) as $line) {
-            $this->addLine(sprintf(".ascii \"%s\"", $line));
+
+        $lines = explode("\n", $text);
+        foreach ($lines as $key => $line) {
+            $type = $key == array_key_last($lines) ? 'asciz' : 'ascii';
+            $this->addLine(sprintf(".%s \"%s\"", $type, $line));
         }
-        $this
-            ->removeIndent()
-            ->addLine(sprintf("%s_len = . - %s", $label, $label));
+        $this->removeIndent();
+
         return $this;
     }
 
-    public function addWriteSyscall(string $textLabel): self
+    public function addPrintfCall(string $textLabel): self
     {
         return $this
-            ->addLine('mov $1, %rax')
-            ->addLine('mov $1, %rdi')
-            ->addLine(sprintf("lea %s(%%rip), %%rsi", $textLabel))
-            ->addLine(sprintf("mov $%s_len, %%rdx", $textLabel))
-            ->addLine('syscall');
+            ->addLine(sprintf("lea %s(%%rip), %%rdi", $textLabel))
+            ->addLine('call printf');
     }
 
     public function addEmptyLine(): self

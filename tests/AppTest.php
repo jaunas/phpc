@@ -38,6 +38,8 @@ class AppTest extends TestCase
             $this->getFixturePath('empty.expected.s'),
             $this->getFixturePath('empty.s')
         );
+
+        unlink($this->getFixturePath('empty.s'));
     }
 
     #[Test]
@@ -54,7 +56,7 @@ class AppTest extends TestCase
         $phpScriptPath = $this->getScriptPath($scriptName, 'php');
         $asmScriptPath = $this->getScriptPath($scriptName, 's');
 
-        $app = new App([null, $phpScriptPath]);
+        $app = new App([1 => $phpScriptPath]);
         $app->generateCompiledScript();
         $output = exec(sprintf('gcc -nostartfiles %s -o tmp && ./tmp', $asmScriptPath));
         unlink($asmScriptPath);
