@@ -2,6 +2,8 @@
 
 namespace Jaunas\PhpCompiler;
 
+use PhpParser\Node\Expr;
+use PhpParser\Node\Expr\BinaryOp\Concat;
 use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt;
@@ -94,6 +96,11 @@ class Compiler
     private function addEcho(Echo_ $stmt): void
     {
         $expr = $stmt->exprs[0];
+        $this->addEchoExpr($expr);
+    }
+
+    private function addEchoExpr(Expr $expr): void
+    {
         if ($expr instanceof String_) {
             $label = 'echo' . $this->echoCount;
             $this->data[$label] = $expr->value;
@@ -102,6 +109,9 @@ class Compiler
         } else if ($expr instanceof LNumber) {
             $this->data['int2str'] = '%lld';
             $this->codeParts[] = (new CodeBuilder())->addPrintfCall('int2str', $expr->value);
+        } else if ($expr instanceof Concat) {
+            $this->addEchoExpr($expr->left);
+            $this->addEchoExpr($expr->right);
         }
     }
 }
