@@ -1,6 +1,6 @@
 FROM php:8.2-cli
 
-ENV UNAME=pcom
+ARG UNAME
 ARG GID
 ARG UID
 
@@ -11,6 +11,6 @@ RUN useradd -m -u $UID -g $GID -o -s /bin/bash $UNAME
 
 USER $UNAME
 
-WORKDIR /usr/src/php-compiler
+WORKDIR /usr/src/phpc
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer

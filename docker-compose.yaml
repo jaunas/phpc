@@ -4,8 +4,9 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
+        - UNAME=${UNAME}
         - UID=${UID}
         - GID=${GID}
     user: "${UID}:${GID}"
     volumes:
-      - .:/usr/src/php-compiler
+      - .:/usr/src/phpc
