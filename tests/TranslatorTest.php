@@ -4,6 +4,7 @@ namespace Jaunas\PhpCompiler\Tests;
 
 use Jaunas\PhpCompiler\Node\Fn_;
 use Jaunas\PhpCompiler\Translator;
+use PhpParser\Node\Expr\BinaryOp\Concat;
 use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Echo_;
@@ -28,26 +29,29 @@ class TranslatorTest extends TestCase
 
     #[Test]
     #[DataProvider('stringToPrintProvider')]
-    public function echoTranslatesToPrint(string $expected, array $inputAst): void
+    public function echoTranslatesToPrint(array $expected, array $inputAst): void
     {
         $translator = new Translator();
 
         $ast = $translator->translate($inputAst)->getBody();
 
-        $this->assertCount(1, $ast);
-        $println = $ast[0];
-        $this->assertEquals($expected, $println->print());
+        $this->assertCount(count($expected), $ast);
+        $prints = [];
+        foreach ($ast as $print) {
+            $prints[] = $print->print();
+        }
+        $this->assertEquals($expected, $prints);
     }
 
     public static function stringToPrintProvider(): array
     {
         return [
             'text_only' => [
-                'expected' => "print!(\"Example text\");\n",
+                'expected' => ["print!(\"Example text\");\n"],
                 'inputAst' => [new InlineHTML('Example text')],
             ],
             'echo' => [
-                'expected' => "print!(\"Example text\");\n",
+                'expected' => ["print!(\"Example text\");\n"],
                 'inputAst' => [
                     new Echo_([
                         new String_('Example text')
@@ -55,10 +59,21 @@ class TranslatorTest extends TestCase
                 ],
             ],
             'echo_integer' => [
-                'expected' => "print!(\"{}\", 314159);\n",
+                'expected' => ["print!(\"{}\", 314159);\n"],
                 'inputAst' => [
                     new Echo_([
                         new LNumber(314159),
+                    ])
+                ],
+            ],
+            'concat' => [
+                'expected' => ["print!(\"first string\");\n", "print!(\"second string\");\n"],
+                'inputAst' => [
+                    new Echo_([
+                        new Concat(
+                            new String_('first string'),
+                            new String_('second string')
+                        ),
                     ])
                 ],
             ],

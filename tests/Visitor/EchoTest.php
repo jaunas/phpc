@@ -4,6 +4,7 @@ namespace Jaunas\PhpCompiler\Tests\Visitor;
 
 use Jaunas\PhpCompiler\Node\Fn_;
 use Jaunas\PhpCompiler\Visitor\Echo_;
+use PhpParser\Node\Expr\BinaryOp\Concat;
 use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Echo_ as EchoNode;
@@ -50,5 +51,31 @@ class EchoTest extends TestCase
         $this->assertCount(1, $main->getBody());
         $print = $main->getBody()[0];
         $this->assertEquals("print!(\"{}\", 5);\n", $print->print());
+    }
+
+    #[Test]
+    public function addsPrintConcatToFn(): void
+    {
+        $main = new Fn_('main');
+
+        $visitor = new Echo_($main);
+        $visitor->enterNode(
+            new EchoNode([
+                new Concat(
+                    new String_('first string'),
+                    new String_('second string')
+                ),
+            ])
+        );
+
+        $this->assertCount(2, $main->getBody());
+        $prints = [
+            $main->getBody()[0]->print(),
+            $main->getBody()[1]->print()
+        ];
+        $this->assertEquals(
+            "print!(\"first string\");\nprint!(\"second string\");\n",
+            implode('', $prints)
+        );
     }
 }
