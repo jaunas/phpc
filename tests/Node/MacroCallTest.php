@@ -3,6 +3,7 @@
 namespace Jaunas\PhpCompiler\Tests\Node;
 
 use Jaunas\PhpCompiler\Node\MacroCall;
+use Jaunas\PhpCompiler\Node\Number;
 use Jaunas\PhpCompiler\Node\String_;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -53,5 +54,12 @@ class MacroCallTest extends TestCase
         $data['format']['argument'] = 'Example string';
 
         return $data;
+    }
+
+    #[Test]
+    public function canPassTwoArguments(): void
+    {
+        $macroCall = new MacroCall('print', new String_('{}'), new Number(5));
+        $this->assertEquals("print!(\"{}\", 5);\n", $macroCall->print());
     }
 }

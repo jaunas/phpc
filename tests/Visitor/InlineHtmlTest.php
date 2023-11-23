@@ -35,7 +35,6 @@ class InlineHtmlTest extends TestCase
 
         $this->assertCount(1, $main->getBody());
         $print = $main->getBody()[0];
-        $this->assertInstanceOf(MacroCall::class, $print);
         $this->assertEquals("print!(\"example text\");\n", $print->print());
     }
 }

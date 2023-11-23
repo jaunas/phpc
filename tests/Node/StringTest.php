@@ -13,7 +13,7 @@ class StringTest extends TestCase
 {
     #[Test]
     #[DataProvider('contentProvider')]
-    public function canPrintNotEmptyString(string $expectedContent, string $content): void
+    public function canPrint(string $expectedContent, string $content): void
     {
         $string = new String_($content);
         $this->assertEquals($expectedContent, $string->print());

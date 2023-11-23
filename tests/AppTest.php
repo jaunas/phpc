@@ -73,12 +73,23 @@ class AppTest extends TestCase
     #[DataProvider('scriptNameProvider')]
     public function compiledOutputsMatch(string $scriptName): void
     {
-        $phpScriptFile = $this->getScriptPath($scriptName, 'php');
-        $asmScriptPath = $this->getScriptPath($scriptName, 'expected.s');
+        $phpScriptPath = $this->getScriptPath($scriptName, 'php');
+        $asmScriptPath = $this->getScriptPath($scriptName, 's');
+        $execPath = $this->getScriptPath($scriptName);
 
-        $expectedOutput = exec(sprintf('php %s', $phpScriptFile));
-        $output = exec(sprintf('gcc -nostartfiles %s -o tmp && ./tmp', $asmScriptPath));
-        unlink(__DIR__ . '/tmp');
+        $app = new App([1 => $phpScriptPath]);
+        try {
+            $app->generateCompiledScript();
+        } catch (FileNotFound $exception) {
+            $this->fail(sprintf("Failed to translate the script: %s", $exception->getMessage()));
+        }
+
+        exec(sprintf('gcc -nostartfiles %s -o %s', $asmScriptPath, $execPath));
+        unlink($asmScriptPath);
+
+        $expectedOutput = exec(sprintf('php %s', $phpScriptPath));
+        $output = exec($execPath);
+        unlink($execPath);
 
         $this->assertEquals($expectedOutput, $output);
     }
@@ -89,7 +100,8 @@ class AppTest extends TestCase
     {
         $phpScriptPath = $this->getScriptPath($scriptName, 'php');
         $rustScriptPath = $this->getScriptPath($scriptName, 'rs');
-        $compiledAppPath = $this->getScriptPath($scriptName);
+        $execPath = $this->getScriptPath($scriptName);
+
         $app = new App([1 => $phpScriptPath]);
         try {
             $app->generateTranslatedScript();
@@ -97,16 +109,16 @@ class AppTest extends TestCase
             $this->fail(sprintf("Failed to translate the script: %s", $exception->getMessage()));
         }
 
-        exec(sprintf('rustc %s -o %s', $rustScriptPath, $compiledAppPath, $compiledAppPath));
+        exec(sprintf('rustc %s -o %s', $rustScriptPath, $execPath));
         unlink($rustScriptPath);
 
         $expectedOutput = '';
         exec(sprintf('php %s', $phpScriptPath), $expectedOutput);
 
         $output = '';
-        exec($compiledAppPath, $output);
+        exec($execPath, $output);
 
-        unlink($compiledAppPath);
+        unlink($execPath);
 
         $this->assertEquals(implode("\n", $expectedOutput), implode("\n", $output));
     }
