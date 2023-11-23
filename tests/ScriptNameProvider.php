@@ -6,9 +6,12 @@ trait ScriptNameProvider
 {
     public static function scriptNameProvider(): array
     {
-        return array_map(function ($filename) {
-            return [self::removeExtension($filename)];
-        }, self::getPhpFilenames());
+        $scriptNames = [];
+        foreach (self::getPhpFilenames() as $filename) {
+            $scriptName = self::removeExtension($filename);
+            $scriptNames[$scriptName] = [$scriptName];
+        }
+        return $scriptNames;
     }
 
     private static function getPhpFilenames(): array
@@ -24,8 +27,9 @@ trait ScriptNameProvider
         return substr($filename, 0, strrpos($filename, "."));
     }
 
-    protected function getScriptPath(string $scriptName, string $extension): string
+    protected function getScriptPath(string $scriptName, ?string $extension = null): string
     {
-        return sprintf("%s/fixtures/%s.%s", __DIR__, $scriptName, $extension);
+        $extension = $extension ? '.' . $extension : '';
+        return sprintf("%s/fixtures/%s%s", __DIR__, $scriptName, $extension);
     }
 }

@@ -20,12 +20,21 @@ class AppTest extends TestCase
     }
 
     #[Test]
-    public function failsWhenNoFile(): void
+    public function compilationFailsWhenNoFile(): void
     {
         $app = new App([1 => $this->getFixturePath('not_exists.php')]);
 
         $this->expectException(FileNotFound::class);
         $app->generateCompiledScript();
+    }
+
+    #[Test]
+    public function translationFailsWhenNoFile(): void
+    {
+        $app = new App([1 => $this->getFixturePath('not_exists.php')]);
+
+        $this->expectException(FileNotFound::class);
+        $app->generateTranslatedScript();
     }
 
     #[Test]
@@ -43,8 +52,26 @@ class AppTest extends TestCase
     }
 
     #[Test]
+    public function generatesTranslatedScript(): void
+    {
+        $app = new App([1 => $this->getFixturePath('empty.php')]);
+        try {
+            $app->generateTranslatedScript();
+        } catch (FileNotFound) {
+            $this->fail('File not found');
+        }
+
+        $this->assertFileEquals(
+            $this->getFixturePath('empty.expected.rs'),
+            $this->getFixturePath('empty.rs')
+        );
+
+        unlink($this->getFixturePath('empty.rs'));
+    }
+
+    #[Test]
     #[DataProvider('scriptNameProvider')]
-    public function outputsMatch(string $scriptName): void
+    public function compiledOutputsMatch(string $scriptName): void
     {
         $phpScriptFile = $this->getScriptPath($scriptName, 'php');
         $asmScriptPath = $this->getScriptPath($scriptName, 'expected.s');
@@ -54,5 +81,33 @@ class AppTest extends TestCase
         unlink(__DIR__ . '/tmp');
 
         $this->assertEquals($expectedOutput, $output);
+    }
+
+    #[Test]
+    #[DataProvider('scriptNameProvider')]
+    public function translatedOutputsMatch(string $scriptName): void
+    {
+        $phpScriptPath = $this->getScriptPath($scriptName, 'php');
+        $rustScriptPath = $this->getScriptPath($scriptName, 'rs');
+        $compiledAppPath = $this->getScriptPath($scriptName);
+        $app = new App([1 => $phpScriptPath]);
+        try {
+            $app->generateTranslatedScript();
+        } catch (FileNotFound $exception) {
+            $this->fail(sprintf("Failed to translate the script: %s", $exception->getMessage()));
+        }
+
+        exec(sprintf('rustc %s -o %s', $rustScriptPath, $compiledAppPath, $compiledAppPath));
+        unlink($rustScriptPath);
+
+        $expectedOutput = '';
+        exec(sprintf('php %s', $phpScriptPath), $expectedOutput);
+
+        $output = '';
+        exec($compiledAppPath, $output);
+
+        unlink($compiledAppPath);
+
+        $this->assertEquals(implode("\n", $expectedOutput), implode("\n", $output));
     }
 }

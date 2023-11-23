@@ -11,6 +11,9 @@ RUN useradd -m -u $UID -g $GID -o -s /bin/bash $UNAME
 
 USER $UNAME
 
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/home/${UNAME}/.cargo/bin:${PATH}"
+
 WORKDIR /usr/src/phpc
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
