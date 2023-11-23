@@ -2,12 +2,15 @@
 
 namespace Jaunas\PhpCompiler\Node;
 
+use Jaunas\PhpCompiler\Node\Expr\Expr;
+use Jaunas\PhpCompiler\Node\Expr\String_;
+
 readonly class MacroCall implements Node
 {
     public function __construct(
         private string $name,
         private ?String_ $format = null,
-        private ?Node $argument = null
+        private ?Expr $argument = null
     ) {
     }
 

@@ -2,9 +2,9 @@
 
 namespace Jaunas\PhpCompiler\Tests\Node;
 
+use Jaunas\PhpCompiler\Node\Expr\Number;
+use Jaunas\PhpCompiler\Node\Expr\String_;
 use Jaunas\PhpCompiler\Node\MacroCall;
-use Jaunas\PhpCompiler\Node\Number;
-use Jaunas\PhpCompiler\Node\String_;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;

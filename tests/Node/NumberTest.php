@@ -2,7 +2,7 @@
 
 namespace Jaunas\PhpCompiler\Tests\Node;
 
-use Jaunas\PhpCompiler\Node\Number;
+use Jaunas\PhpCompiler\Node\Expr\Number;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;

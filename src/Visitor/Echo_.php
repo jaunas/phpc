@@ -2,10 +2,10 @@
 
 namespace Jaunas\PhpCompiler\Visitor;
 
+use Jaunas\PhpCompiler\Node\Expr\Number;
+use Jaunas\PhpCompiler\Node\Expr\String_;
 use Jaunas\PhpCompiler\Node\Fn_;
 use Jaunas\PhpCompiler\Node\MacroCall;
-use Jaunas\PhpCompiler\Node\Number;
-use Jaunas\PhpCompiler\Node\String_;
 use PhpParser\Node;
 use PhpParser\Node\Scalar\LNumber;
 use PhpParser\Node\Scalar\String_ as StringNode;

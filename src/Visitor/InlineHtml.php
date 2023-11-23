@@ -2,9 +2,9 @@
 
 namespace Jaunas\PhpCompiler\Visitor;
 
+use Jaunas\PhpCompiler\Node\Expr\String_;
 use Jaunas\PhpCompiler\Node\Fn_;
 use Jaunas\PhpCompiler\Node\MacroCall;
-use Jaunas\PhpCompiler\Node\String_;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\InlineHTML as InlineHTMLNode;
 use PhpParser\NodeVisitorAbstract;
