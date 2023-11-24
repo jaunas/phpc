@@ -4,12 +4,27 @@ namespace Jaunas\PhpCompiler\Tests;
 
 use Jaunas\PhpCompiler\App;
 use Jaunas\PhpCompiler\Exception\FileNotFound;
+use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
+use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
+use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
+use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
+use Jaunas\PhpCompiler\Translator;
+use Jaunas\PhpCompiler\Visitor\Echo_ as EchoVisitor;
+use Jaunas\PhpCompiler\Visitor\InlineHtml as InlineHtmlVisitor;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(App::class)]
+#[UsesClass(RustFn::class)]
+#[UsesClass(RustString::class)]
+#[UsesClass(RustMacroCall::class)]
+#[UsesClass(RustNumber::class)]
+#[UsesClass(Translator::class)]
+#[UsesClass(EchoVisitor::class)]
+#[UsesClass(InlineHtmlVisitor::class)]
 class AppTest extends TestCase
 {
     use ScriptNameProvider;

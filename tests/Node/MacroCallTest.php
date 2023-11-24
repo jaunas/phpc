@@ -2,15 +2,18 @@
 
 namespace Jaunas\PhpCompiler\Tests\Node;
 
-use Jaunas\PhpCompiler\Node\Expr\Number;
-use Jaunas\PhpCompiler\Node\Expr\String_;
+use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
+use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
 use Jaunas\PhpCompiler\Node\MacroCall;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(MacroCall::class)]
+#[UsesClass(RustNumber::class)]
+#[UsesClass(RustString::class)]
 class MacroCallTest extends TestCase
 {
     #[Test]
@@ -39,7 +42,7 @@ class MacroCallTest extends TestCase
     #[DataProvider('nameAndArgumentProvider')]
     public function canPrintWithAnArgument(string $expected, string $name, string $argument): void
     {
-        $macroCall = new MacroCall($name, new String_($argument));
+        $macroCall = new MacroCall($name, new RustString($argument));
         $this->assertEquals($expected, $macroCall->print());
     }
 
@@ -59,7 +62,7 @@ class MacroCallTest extends TestCase
     #[Test]
     public function canPassTwoArguments(): void
     {
-        $macroCall = new MacroCall('print', new String_('{}'), new Number(5));
+        $macroCall = new MacroCall('print', new RustString('{}'), new RustNumber(5));
         $this->assertEquals("print!(\"{}\", 5);\n", $macroCall->print());
     }
 }

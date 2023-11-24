@@ -2,27 +2,35 @@
 
 namespace Jaunas\PhpCompiler\Tests\Visitor;
 
-use Jaunas\PhpCompiler\Node\Fn_;
+use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
+use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
+use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
+use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
 use Jaunas\PhpCompiler\Visitor\Echo_;
-use PhpParser\Node\Expr\BinaryOp\Concat;
-use PhpParser\Node\Scalar\LNumber;
-use PhpParser\Node\Scalar\String_;
-use PhpParser\Node\Stmt\Echo_ as EchoNode;
-use PhpParser\Node\Stmt\Function_;
+use PhpParser\Node\Expr\BinaryOp\Concat as PhpConcat;
+use PhpParser\Node\Scalar\LNumber as PhpLNumber;
+use PhpParser\Node\Scalar\String_ as PhpString;
+use PhpParser\Node\Stmt\Echo_ as PhpEcho;
+use PhpParser\Node\Stmt\Function_ as PhpFunction;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Echo_::class)]
+#[UsesClass(RustString::class)]
+#[UsesClass(RustFn::class)]
+#[UsesClass(RustMacroCall::class)]
+#[UsesClass(RustNumber::class)]
 class EchoTest extends TestCase
 {
     #[Test]
     public function doesNothingIfDontMatch(): void
     {
-        $main = new Fn_('main');
+        $main = new RustFn('main');
 
         $visitor = new Echo_($main);
-        $visitor->enterNode(new Function_('custom_function'));
+        $visitor->enterNode(new PhpFunction('custom_function'));
 
         $this->assertEmpty($main->getBody());
     }
@@ -30,10 +38,10 @@ class EchoTest extends TestCase
     #[Test]
     public function addsPrintToFn(): void
     {
-        $main = new Fn_('main');
+        $main = new RustFn('main');
 
         $visitor = new Echo_($main);
-        $visitor->enterNode(new EchoNode([new String_('Example text')]));
+        $visitor->enterNode(new PhpEcho([new PhpString('Example text')]));
 
         $this->assertCount(1, $main->getBody());
         $print = $main->getBody()[0];
@@ -43,10 +51,10 @@ class EchoTest extends TestCase
     #[Test]
     public function addsPrintNumberToFn(): void
     {
-        $main = new Fn_('main');
+        $main = new RustFn('main');
 
         $visitor = new Echo_($main);
-        $visitor->enterNode(new EchoNode([new LNumber(5)]));
+        $visitor->enterNode(new PhpEcho([new PhpLNumber(5)]));
 
         $this->assertCount(1, $main->getBody());
         $print = $main->getBody()[0];
@@ -56,14 +64,14 @@ class EchoTest extends TestCase
     #[Test]
     public function addsPrintConcatToFn(): void
     {
-        $main = new Fn_('main');
+        $main = new RustFn('main');
 
         $visitor = new Echo_($main);
         $visitor->enterNode(
-            new EchoNode([
-                new Concat(
-                    new String_('first string'),
-                    new String_('second string')
+            new PhpEcho([
+                new PhpConcat(
+                    new PhpString('first string'),
+                    new PhpString('second string')
                 ),
             ])
         );
