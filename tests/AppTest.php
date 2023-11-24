@@ -20,35 +20,12 @@ class AppTest extends TestCase
     }
 
     #[Test]
-    public function compilationFailsWhenNoFile(): void
-    {
-        $app = new App([1 => $this->getFixturePath('not_exists.php')]);
-
-        $this->expectException(FileNotFound::class);
-        $app->generateCompiledScript();
-    }
-
-    #[Test]
     public function translationFailsWhenNoFile(): void
     {
         $app = new App([1 => $this->getFixturePath('not_exists.php')]);
 
         $this->expectException(FileNotFound::class);
         $app->generateTranslatedScript();
-    }
-
-    #[Test]
-    public function generatesCompiledScript(): void
-    {
-        $app = new App([1 => $this->getFixturePath('empty.php')]);
-        $app->generateCompiledScript();
-
-        $this->assertFileEquals(
-            $this->getFixturePath('empty.expected.s'),
-            $this->getFixturePath('empty.s')
-        );
-
-        unlink($this->getFixturePath('empty.s'));
     }
 
     #[Test]
@@ -67,31 +44,6 @@ class AppTest extends TestCase
         );
 
         unlink($this->getFixturePath('empty.rs'));
-    }
-
-    #[Test]
-    #[DataProvider('scriptNameProvider')]
-    public function compiledOutputsMatch(string $scriptName): void
-    {
-        $phpScriptPath = $this->getScriptPath($scriptName, 'php');
-        $asmScriptPath = $this->getScriptPath($scriptName, 's');
-        $execPath = $this->getScriptPath($scriptName);
-
-        $app = new App([1 => $phpScriptPath]);
-        try {
-            $app->generateCompiledScript();
-        } catch (FileNotFound $exception) {
-            $this->fail(sprintf("Failed to translate the script: %s", $exception->getMessage()));
-        }
-
-        exec(sprintf('gcc -nostartfiles %s -o %s', $asmScriptPath, $execPath));
-        unlink($asmScriptPath);
-
-        $expectedOutput = exec(sprintf('php %s', $phpScriptPath));
-        $output = exec($execPath);
-        unlink($execPath);
-
-        $this->assertEquals($expectedOutput, $output);
     }
 
     #[Test]

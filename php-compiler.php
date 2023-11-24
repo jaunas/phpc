@@ -4,4 +4,4 @@ use Jaunas\PhpCompiler\App;
 
 require __DIR__ . '/vendor/autoload.php';
 
-(new App($argv))->generateCompiledScript();
+(new App($argv))->generateTranslatedScript();

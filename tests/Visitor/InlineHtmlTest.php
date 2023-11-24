@@ -3,7 +3,6 @@
 namespace Jaunas\PhpCompiler\Tests\Visitor;
 
 use Jaunas\PhpCompiler\Node\Fn_;
-use Jaunas\PhpCompiler\Node\MacroCall;
 use Jaunas\PhpCompiler\Visitor\InlineHtml;
 use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\InlineHTML as InlineHTMLNode;
