@@ -2,27 +2,28 @@
 
 namespace Jaunas\PhpCompiler;
 
-use Jaunas\PhpCompiler\Exception\FileNotFound;
+use Jaunas\PhpCompiler\Exception\FileNotReadable;
 use PhpParser\ParserFactory;
 
 class App
 {
     private string $filename;
 
+    /**
+     * @param string[] $argv
+     */
     public function __construct(array $argv)
     {
         $this->filename = $argv[1];
     }
 
     /**
-     * @throws FileNotFound
+     * @throws FileNotReadable
      */
     public function generateTranslatedScript(): void
     {
-        $this->throwExceptionWhenNoFile();
-
         $parser = (new ParserFactory())->create(ParserFactory::ONLY_PHP7);
-        $ast = $parser->parse(file_get_contents($this->filename));
+        $ast = $parser->parse($this->readPhpCode()) ?? [];
         $translator = new Translator();
 
         file_put_contents($this->getCompiledFilename(), $translator->translate($ast)->print());
@@ -35,12 +36,15 @@ class App
     }
 
     /**
-     * @throws FileNotFound
+     * @throws FileNotReadable
      */
-    private function throwExceptionWhenNoFile(): void
+    private function readPhpCode(): string
     {
-        if (!file_exists($this->filename)) {
-            throw new FileNotFound();
+        $phpCode = file_exists($this->filename) ? file_get_contents($this->filename) : false;
+        if ($phpCode === false) {
+            throw new FileNotReadable();
         }
+
+        return $phpCode;
     }
 }

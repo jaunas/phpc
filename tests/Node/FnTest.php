@@ -14,6 +14,9 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(RustMacroCall::class)]
 class FnTest extends TestCase
 {
+    /**
+     * @return array<string, array<string, string>>
+     */
     public static function fnProvider(): array
     {
         return [

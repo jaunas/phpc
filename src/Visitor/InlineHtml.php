@@ -15,10 +15,12 @@ class InlineHtml extends NodeVisitorAbstract
     {
     }
 
-    public function enterNode(Node $node): void
+    public function enterNode(Node $node): null
     {
         if ($node instanceof InlineHTMLNode) {
             $this->main->addToBody(new MacroCall('print', new String_($node->value)));
         }
+
+        return null;
     }
 }

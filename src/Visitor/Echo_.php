@@ -19,12 +19,13 @@ class Echo_ extends NodeVisitorAbstract
     {
     }
 
-    public function enterNode(Node $node): void
+    public function enterNode(Node $node): null
     {
         if ($node instanceof EchoNode && isset($node->exprs[0])) {
             $node = $node->exprs[0];
             $this->enterSubNode($node);
         }
+        return null;
     }
 
     private function enterSubNode(Node $node): void

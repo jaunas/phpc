@@ -19,6 +19,9 @@ class NumberTest extends TestCase
         $this->assertSame("$expected", $number->print());
     }
 
+    /**
+     * @return int[][]
+     */
     public static function numberProvider(): array
     {
         return [[5], [314159]];

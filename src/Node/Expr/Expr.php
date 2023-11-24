@@ -6,5 +6,4 @@ use Jaunas\PhpCompiler\Node\Node;
 
 abstract class Expr implements Node
 {
-
 }

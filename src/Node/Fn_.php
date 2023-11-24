@@ -23,6 +23,9 @@ class Fn_ implements Node
         $this->body[] = $println;
     }
 
+    /**
+     * @return MacroCall[]
+     */
     public function getBody(): array
     {
         return $this->body;

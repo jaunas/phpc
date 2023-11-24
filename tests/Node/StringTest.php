@@ -19,6 +19,9 @@ class StringTest extends TestCase
         $this->assertEquals($expectedContent, $string->print());
     }
 
+    /**
+     * @return array<string, string[]>
+     */
     public static function contentProvider(): array
     {
         return [

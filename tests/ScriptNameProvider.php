@@ -4,6 +4,9 @@ namespace Jaunas\PhpCompiler\Tests;
 
 trait ScriptNameProvider
 {
+    /**
+     * @return array<string, string[]>
+     */
     public static function scriptNameProvider(): array
     {
         $scriptNames = [];
@@ -14,17 +17,24 @@ trait ScriptNameProvider
         return $scriptNames;
     }
 
+    /**
+     * @return string[]
+     */
     private static function getPhpFilenames(): array
     {
-        $files = scandir(__DIR__ . '/fixtures/');
+        if (false === $files = scandir(__DIR__ . '/fixtures/')) {
+            static::fail("Couldn't scan the directory");
+        }
+
         return array_filter($files, function ($filename) {
             return preg_match('/\\.php$/', $filename);
         });
     }
 
-    private static function removeExtension(mixed $filename): string
+    private static function removeExtension(string $filename): string
     {
-        return substr($filename, 0, strrpos($filename, "."));
+        $dotPos = strrpos($filename, ".");
+        return $dotPos ? substr($filename, 0, $dotPos) : $filename;
     }
 
     protected function getScriptPath(string $scriptName, ?string $extension = null): string

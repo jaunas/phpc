@@ -3,7 +3,7 @@
 namespace Jaunas\PhpCompiler\Tests;
 
 use Jaunas\PhpCompiler\App;
-use Jaunas\PhpCompiler\Exception\FileNotFound;
+use Jaunas\PhpCompiler\Exception\FileNotReadable;
 use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
 use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
@@ -39,7 +39,7 @@ class AppTest extends TestCase
     {
         $app = new App([1 => $this->getFixturePath('not_exists.php')]);
 
-        $this->expectException(FileNotFound::class);
+        $this->expectException(FileNotReadable::class);
         $app->generateTranslatedScript();
     }
 
@@ -49,7 +49,7 @@ class AppTest extends TestCase
         $app = new App([1 => $this->getFixturePath('empty.php')]);
         try {
             $app->generateTranslatedScript();
-        } catch (FileNotFound) {
+        } catch (FileNotReadable) {
             $this->fail('File not found');
         }
 
@@ -72,7 +72,7 @@ class AppTest extends TestCase
         $app = new App([1 => $phpScriptPath]);
         try {
             $app->generateTranslatedScript();
-        } catch (FileNotFound $exception) {
+        } catch (FileNotReadable $exception) {
             $this->fail(sprintf("Failed to translate the script: %s", $exception->getMessage()));
         }
 

@@ -12,6 +12,7 @@ use Jaunas\PhpCompiler\Visitor\InlineHtml as InlineHtmlVisitor;
 use PhpParser\Node\Expr\BinaryOp\Concat;
 use PhpParser\Node\Scalar\LNumber as PhpLNumber;
 use PhpParser\Node\Scalar\String_ as PhpString;
+use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Echo_ as PhpEcho;
 use PhpParser\Node\Stmt\InlineHTML as PhpInlineHtml;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -39,13 +40,16 @@ class TranslatorTest extends TestCase
         $this->assertEquals('main', $main->getName());
     }
 
+    /**
+     * @param string[] $expected
+     */
     #[Test]
     #[DataProvider('stringToPrintProvider')]
-    public function echoTranslatesToPrint(array $expected, array $inputAst): void
+    public function echoTranslatesToPrint(array $expected, Stmt $rootAst): void
     {
         $translator = new Translator();
 
-        $ast = $translator->translate($inputAst)->getBody();
+        $ast = $translator->translate([$rootAst])->getBody();
 
         $this->assertCount(count($expected), $ast);
         $prints = [];
@@ -55,39 +59,36 @@ class TranslatorTest extends TestCase
         $this->assertEquals($expected, $prints);
     }
 
+    /**
+     * @return array<string, array<string, string[]|Stmt>>
+     */
     public static function stringToPrintProvider(): array
     {
         return [
             'text_only' => [
                 'expected' => ["print!(\"Example text\");\n"],
-                'inputAst' => [new PhpInlineHtml('Example text')],
+                'rootAst' => new PhpInlineHtml('Example text'),
             ],
             'echo' => [
                 'expected' => ["print!(\"Example text\");\n"],
-                'inputAst' => [
-                    new PhpEcho([
-                        new PhpString('Example text')
-                    ]),
-                ],
+                'rootAst' => new PhpEcho([
+                    new PhpString('Example text')
+                ]),
             ],
             'echo_integer' => [
                 'expected' => ["print!(\"{}\", 314159);\n"],
-                'inputAst' => [
-                    new PhpEcho([
-                        new PhpLNumber(314159),
-                    ])
-                ],
+                'rootAst' => new PhpEcho([
+                    new PhpLNumber(314159),
+                ]),
             ],
             'concat' => [
                 'expected' => ["print!(\"first string\");\n", "print!(\"second string\");\n"],
-                'inputAst' => [
-                    new PhpEcho([
-                        new Concat(
-                            new PhpString('first string'),
-                            new PhpString('second string')
-                        ),
-                    ])
-                ],
+                'rootAst' => new PhpEcho([
+                    new Concat(
+                        new PhpString('first string'),
+                        new PhpString('second string')
+                    ),
+                ]),
             ],
         ];
     }

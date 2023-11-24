@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
+
+    <arg name="basepath" value="."/>
+    <arg name="cache" value=".phpcs-cache"/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+
+    <rule ref="PSR12"/>
+    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+        <exclude-pattern>src/Node/*</exclude-pattern>
+        <exclude-pattern>src/Visitor/Echo_</exclude-pattern>
+    </rule>
+
+    <!-- TODO: Remove it after tagging the fix in PhpCs -->
+    <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+        <exclude-pattern>src/Node/MacroCall</exclude-pattern>
+    </rule>
+
+    <file>src/</file>
+    <file>tests/</file>
+
+</ruleset>

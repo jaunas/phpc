@@ -24,6 +24,9 @@ class MacroCallTest extends TestCase
         $this->assertEquals($expected, $macroCall->print());
     }
 
+    /**
+     * @return array<string, array<string, string>>
+     */
     public static function nameProvider(): array
     {
         return [
@@ -46,6 +49,9 @@ class MacroCallTest extends TestCase
         $this->assertEquals($expected, $macroCall->print());
     }
 
+    /**
+     * @return array<string, array<string, string>>
+     */
     public static function nameAndArgumentProvider(): array
     {
         $data = self::nameProvider();

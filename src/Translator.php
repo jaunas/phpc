@@ -5,6 +5,7 @@ namespace Jaunas\PhpCompiler;
 use Jaunas\PhpCompiler\Node\Fn_;
 use Jaunas\PhpCompiler\Visitor\Echo_;
 use Jaunas\PhpCompiler\Visitor\InlineHtml;
+use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
 
 class Translator
@@ -21,6 +22,9 @@ class Translator
         $this->traverser->addVisitor(new Echo_($this->main));
     }
 
+    /**
+     * @param Stmt[] $array
+     */
     public function translate(array $array): Fn_
     {
         $this->traverser->traverse($array);

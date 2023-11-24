@@ -4,7 +4,6 @@ namespace Jaunas\PhpCompiler\Exception;
 
 use Exception;
 
-class FileNotFound extends Exception
+class FileNotReadable extends Exception
 {
-
 }
