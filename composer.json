@@ -26,7 +26,7 @@
         "coverage": "XDEBUG_MODE=coverage phpunit --coverage-html=coverage",
         "phpcs": "phpcs && echo 'OK'",
         "phpcbf": "phpcbf",
-        "phpstan": "phpstan analyse",
+        "phpstan": "phpstan analyse -c phpstan.dist.neon",
         "test": ["@phpcs", "@phpstan", "@phpunit"]
     }
 }

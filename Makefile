@@ -7,3 +7,6 @@ build: config
 
 php:
 	@docker compose run -it php /bin/bash
+
+test:
+	@docker compose run php composer test
