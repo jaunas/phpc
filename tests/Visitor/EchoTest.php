@@ -2,6 +2,7 @@
 
 namespace Jaunas\PhpCompiler\Tests\Visitor;
 
+use Jaunas\PhpCompiler\Node\Expr\BinaryOp as RustBinaryOp;
 use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
 use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
@@ -9,6 +10,7 @@ use Jaunas\PhpCompiler\Node\MacroCall;
 use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
 use Jaunas\PhpCompiler\Visitor\Echo_;
 use PhpParser\Node\Expr\BinaryOp\Concat as PhpConcat;
+use PhpParser\Node\Expr\BinaryOp\Minus as PhpMinus;
 use PhpParser\Node\Expr\BinaryOp\Plus as PhpPlus;
 use PhpParser\Node\Scalar\LNumber as PhpLNumber;
 use PhpParser\Node\Scalar\String_ as PhpString;
@@ -25,6 +27,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(RustFn::class)]
 #[UsesClass(RustMacroCall::class)]
 #[UsesClass(RustNumber::class)]
+#[UsesClass(RustBinaryOp::class)]
 class EchoTest extends TestCase
 {
     #[Test]
@@ -98,6 +101,15 @@ class EchoTest extends TestCase
                     new PhpLNumber(5),
                     new PhpLNumber(3)
                 )]),
+            ],
+            'minus' => [
+                'expected' => ["print!(\"{}\", 5 - 3);\n"],
+                'echo' => new PhpEcho([
+                    new PhpMinus(
+                        new PhpLNumber(5),
+                        new PhpLNumber(3)
+                    ),
+                ]),
             ],
         ];
     }

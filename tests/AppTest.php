@@ -4,6 +4,7 @@ namespace Jaunas\PhpCompiler\Tests;
 
 use Jaunas\PhpCompiler\App;
 use Jaunas\PhpCompiler\Exception\FileNotReadable;
+use Jaunas\PhpCompiler\Node\Expr\BinaryOp as RustBinaryOp;
 use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
 use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
@@ -25,6 +26,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Translator::class)]
 #[UsesClass(EchoVisitor::class)]
 #[UsesClass(InlineHtmlVisitor::class)]
+#[UsesClass(RustBinaryOp::class)]
 class AppTest extends TestCase
 {
     use ScriptNameProvider;
