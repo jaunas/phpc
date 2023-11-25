@@ -9,7 +9,8 @@ use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
 use Jaunas\PhpCompiler\Translator;
 use Jaunas\PhpCompiler\Visitor\Echo_ as EchoVisitor;
 use Jaunas\PhpCompiler\Visitor\InlineHtml as InlineHtmlVisitor;
-use PhpParser\Node\Expr\BinaryOp\Concat;
+use PhpParser\Node\Expr\BinaryOp\Concat as PhpConcat;
+use PhpParser\Node\Expr\BinaryOp\Plus as PhpPlus;
 use PhpParser\Node\Scalar\LNumber as PhpLNumber;
 use PhpParser\Node\Scalar\String_ as PhpString;
 use PhpParser\Node\Stmt;
@@ -60,7 +61,10 @@ class TranslatorTest extends TestCase
     }
 
     /**
-     * @return array<string, array<string, string[]|Stmt>>
+     * @return array<string, array{
+     *     expected: string[],
+     *     rootAst: Stmt
+     * }>
      */
     public static function stringToPrintProvider(): array
     {
@@ -84,9 +88,26 @@ class TranslatorTest extends TestCase
             'concat' => [
                 'expected' => ["print!(\"first string\");\n", "print!(\"second string\");\n"],
                 'rootAst' => new PhpEcho([
-                    new Concat(
+                    new PhpConcat(
                         new PhpString('first string'),
                         new PhpString('second string')
+                    ),
+                ]),
+            ],
+            'comma' => [
+                'expected' => ["print!(\"string\");\n", "print!(\"{}\", 5);\n", "print!(\"string again\");\n"],
+                'rootAst' => new PhpEcho([
+                    new PhpString('string'),
+                    new PhpLNumber(5),
+                    new PhpString('string again'),
+                ]),
+            ],
+            'plus' => [
+                'expected' => ["print!(\"{}\", 5 + 3);\n"],
+                'rootAst' => new PhpEcho([
+                    new PhpPlus(
+                        new PhpLNumber(5),
+                        new PhpLNumber(3)
                     ),
                 ]),
             ],

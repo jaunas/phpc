@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaunas\PhpCompiler\Tests\Node;
+namespace Jaunas\PhpCompiler\Tests\Node\Expr;
 
 use Jaunas\PhpCompiler\Node\Expr\String_;
 use PHPUnit\Framework\Attributes\CoversClass;

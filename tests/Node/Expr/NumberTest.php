@@ -1,6 +1,6 @@
 <?php
 
-namespace Jaunas\PhpCompiler\Tests\Node;
+namespace Jaunas\PhpCompiler\Tests\Node\Expr;
 
 use Jaunas\PhpCompiler\Node\Expr\Number;
 use PHPUnit\Framework\Attributes\CoversClass;
