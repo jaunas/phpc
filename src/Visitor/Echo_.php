@@ -4,6 +4,7 @@ namespace Jaunas\PhpCompiler\Visitor;
 
 use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
 use Jaunas\PhpCompiler\Node\Expr\BinaryOp as RustBinaryOp;
+use Jaunas\PhpCompiler\Node\Expr\PhpNumber as RustPhpNumber;
 use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
 use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
@@ -36,7 +37,11 @@ class Echo_ extends NodeVisitorAbstract
         if ($node instanceof PhpString) {
             $this->fn->addToBody(new RustMacroCall('print', new RustString($node->value)));
         } elseif ($node instanceof PhpLNumber) {
-            $this->fn->addToBody(new RustMacroCall('print', new RustString('{}'), new RustNumber($node->value)));
+            $this->fn->addToBody(new RustMacroCall(
+                'print',
+                new RustString('{}'),
+                new RustPhpNumber(new RustNumber($node->value))
+            ));
         } elseif ($node instanceof PhpConcat) {
             $this->enterExpr($node->left);
             $this->enterExpr($node->right);
@@ -46,11 +51,11 @@ class Echo_ extends NodeVisitorAbstract
                     new RustMacroCall(
                         'print',
                         new RustString('{}'),
-                        new RustBinaryOp(
+                        new RustPhpNumber(new RustBinaryOp(
                             $node->getOperatorSigil(),
                             new RustNumber($node->left->value),
                             new RustNumber($node->right->value)
-                        )
+                        ))
                     )
                 );
             }

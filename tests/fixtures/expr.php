@@ -7,7 +7,7 @@ echo "Hello, World!\n";
 echo "Result of addition: " . (5 + 3) . "\n";
 echo "Result of subtraction: " . (10 - 3) . "\n";
 echo "Result of multiplication: " . (10 * 3) . "\n";
-//echo "Result of division: " . (10 / 3) . "\n";
+echo "Result of division: " . (10 / 3) . "\n";
 
 //// Test 3: Logical expression
 //echo "Is 5 equal to 3? " . (5 == 3 ? "Yes" : "No") . "\n";

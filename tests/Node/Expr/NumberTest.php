@@ -13,17 +13,26 @@ class NumberTest extends TestCase
 {
     #[Test]
     #[DataProvider('numberProvider')]
-    public function canPrint(int $expected): void
+    public function canPrint(string $expected, int $value): void
     {
-        $number = new Number($expected);
-        $this->assertSame("$expected", $number->print());
+        $number = new Number($value);
+        $this->assertEquals($expected, $number->print());
     }
 
     /**
-     * @return int[][]
+     * @return array{expected: string, value: int}[]
      */
     public static function numberProvider(): array
     {
-        return [[5], [314159]];
+        return [
+            '5' => [
+                'expected' => '5_f64',
+                'value' => 5,
+            ],
+            '314159' => [
+                'expected' => '314159_f64',
+                'value' => 314159,
+            ]
+        ];
     }
 }

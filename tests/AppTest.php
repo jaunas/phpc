@@ -69,7 +69,6 @@ class AppTest extends TestCase
     {
         $phpScriptPath = $this->getScriptPath($scriptName, 'php');
         $rustScriptPath = $this->getScriptPath($scriptName, 'rs');
-        $execPath = $this->getScriptPath($scriptName);
 
         $app = new App([1 => $phpScriptPath]);
         try {
@@ -78,17 +77,35 @@ class AppTest extends TestCase
             $this->fail(sprintf("Failed to translate the script: %s", $exception->getMessage()));
         }
 
-        exec(sprintf('rustc %s -o %s', $rustScriptPath, $execPath));
+        $output = $this->fetchCommandOutput(
+            sprintf('cargo run --example %s', $scriptName),
+            __DIR__ . '/../rust-php'
+        );
         unlink($rustScriptPath);
 
-        $expectedOutput = '';
-        exec(sprintf('php %s', $phpScriptPath), $expectedOutput);
+        $expectedOutput = $this->fetchCommandOutput(sprintf('php %s', $phpScriptPath));
 
-        $output = '';
-        exec($execPath, $output);
+        $this->assertEquals($expectedOutput, $output);
+    }
 
-        unlink($execPath);
+    private function fetchCommandOutput(string $command, ?string $workingDirectory = null): string
+    {
+        $pipeMap = [
+            0 => ['pipe', 'r'],
+            1 => ['pipe', 'w'],
+            2 => ['pipe', 'w'],
+        ];
+        $process = proc_open($command, $pipeMap, $pipes, $workingDirectory);
+        if (is_resource($process)) {
+            $output = stream_get_contents($pipes[1]);
+            fclose($pipes[1]);
+            proc_close($process);
+        }
 
-        $this->assertEquals(implode("\n", $expectedOutput), implode("\n", $output));
+        if (!isset($output) || $output === false) {
+            $this->fail('Failed to fetch command output');
+        }
+
+        return $output;
     }
 }

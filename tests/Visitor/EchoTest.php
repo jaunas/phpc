@@ -6,9 +6,8 @@ use Jaunas\PhpCompiler\Node\Expr\BinaryOp as RustBinaryOp;
 use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
 use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
-use Jaunas\PhpCompiler\Node\MacroCall;
 use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
-use Jaunas\PhpCompiler\Visitor\Echo_;
+use Jaunas\PhpCompiler\Visitor\Echo_ as EchoVisitor;
 use PhpParser\Node\Expr\BinaryOp\Concat as PhpConcat;
 use PhpParser\Node\Expr\BinaryOp\Minus as PhpMinus;
 use PhpParser\Node\Expr\BinaryOp\Plus as PhpPlus;
@@ -22,7 +21,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(Echo_::class)]
+#[CoversClass(EchoVisitor::class)]
 #[UsesClass(RustString::class)]
 #[UsesClass(RustFn::class)]
 #[UsesClass(RustMacroCall::class)]
@@ -35,7 +34,7 @@ class EchoTest extends TestCase
     {
         $main = new RustFn('main');
 
-        $visitor = new Echo_($main);
+        $visitor = new EchoVisitor($main);
         $visitor->enterNode(new PhpFunction('custom_function'));
 
         $this->assertEmpty($main->getBody());
@@ -50,12 +49,12 @@ class EchoTest extends TestCase
     {
         $main = new RustFn('main');
 
-        $visitor = new Echo_($main);
+        $visitor = new EchoVisitor($main);
         $visitor->enterNode($echo);
 
         $this->assertCount(count($expected), $main->getBody());
         $print = array_map(
-            function (MacroCall $node) {
+            function (RustMacroCall $node) {
                 return $node->print();
             },
             $main->getBody()
@@ -77,7 +76,7 @@ class EchoTest extends TestCase
                 'echo' => new PhpEcho([new PhpString('Example text')]),
             ],
             'number' => [
-                'expected' => ["print!(\"{}\", 5);\n"],
+                'expected' => ["print!(\"{}\", rust_php::PhpNumber::new(5_f64));\n"],
                 'echo' => new PhpEcho([new PhpLNumber(5)]),
             ],
             'concat' => [
@@ -88,7 +87,11 @@ class EchoTest extends TestCase
                 )]),
             ],
             'comma' => [
-                'expected' => ["print!(\"string\");\n", "print!(\"{}\", 5);\n", "print!(\"string again\");\n"],
+                'expected' => [
+                    "print!(\"string\");\n",
+                    "print!(\"{}\", rust_php::PhpNumber::new(5_f64));\n",
+                    "print!(\"string again\");\n"
+                ],
                 'echo' => new PhpEcho([
                     new PhpString('string'),
                     new PhpLNumber(5),
@@ -96,14 +99,14 @@ class EchoTest extends TestCase
                 ]),
             ],
             'plus' => [
-                'expected' => ["print!(\"{}\", 5 + 3);\n"],
+                'expected' => ["print!(\"{}\", rust_php::PhpNumber::new(5_f64 + 3_f64));\n"],
                 'echo' => new PhpEcho([new PhpPlus(
                     new PhpLNumber(5),
                     new PhpLNumber(3)
                 )]),
             ],
             'minus' => [
-                'expected' => ["print!(\"{}\", 5 - 3);\n"],
+                'expected' => ["print!(\"{}\", rust_php::PhpNumber::new(5_f64 - 3_f64));\n"],
                 'echo' => new PhpEcho([
                     new PhpMinus(
                         new PhpLNumber(5),

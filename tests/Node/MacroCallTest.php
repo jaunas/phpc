@@ -3,6 +3,7 @@
 namespace Jaunas\PhpCompiler\Tests\Node;
 
 use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
+use Jaunas\PhpCompiler\Node\Expr\PhpNumber;
 use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
 use Jaunas\PhpCompiler\Node\MacroCall;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -68,7 +69,7 @@ class MacroCallTest extends TestCase
     #[Test]
     public function canPassTwoArguments(): void
     {
-        $macroCall = new MacroCall('print', new RustString('{}'), new RustNumber(5));
-        $this->assertEquals("print!(\"{}\", 5);\n", $macroCall->print());
+        $macroCall = new MacroCall('print', new RustString('{}'), new PhpNumber(new RustNumber(5)));
+        $this->assertEquals("print!(\"{}\", rust_php::PhpNumber::new(5_f64));\n", $macroCall->print());
     }
 }
