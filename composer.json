@@ -1,5 +1,6 @@
 {
     "name": "jaunas/php-compiler",
+    "description": "PHP to Rust translator",
     "type": "project",
     "license": "MIT",
     "autoload": {
@@ -22,6 +23,9 @@
         "squizlabs/php_codesniffer": "^3.7"
     },
     "scripts": {
+        "pre-install-cmd": [
+            "ln -s ../tests/fixtures rust-php/examples"
+        ],
         "phpunit": "phpunit",
         "coverage": "XDEBUG_MODE=coverage phpunit --coverage-html=coverage",
         "phpcs": "phpcs && echo 'OK'",
