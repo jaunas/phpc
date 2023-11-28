@@ -10,6 +10,6 @@ class Number extends Expr
 
     public function print(): string
     {
-        return "{$this->value}_f64";
+        return $this->value . '_f64';
     }
 }

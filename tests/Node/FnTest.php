@@ -36,7 +36,7 @@ class FnTest extends TestCase
     public function getName(string $name): void
     {
         $fn = new Fn_($name);
-        $this->assertEquals($fn->getName(), $name);
+        $this->assertEquals($name, $fn->getName());
     }
 
     #[Test]

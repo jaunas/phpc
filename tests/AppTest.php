@@ -6,6 +6,7 @@ use Jaunas\PhpCompiler\App;
 use Jaunas\PhpCompiler\Exception\FileNotReadable;
 use Jaunas\PhpCompiler\Node\Expr\BinaryOp as RustBinaryOp;
 use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
+use Jaunas\PhpCompiler\Node\Expr\PhpNumber as RustPhpNumber;
 use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
 use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
@@ -27,6 +28,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(EchoVisitor::class)]
 #[UsesClass(InlineHtmlVisitor::class)]
 #[UsesClass(RustBinaryOp::class)]
+#[UsesClass(RustPhpNumber::class)]
 class AppTest extends TestCase
 {
     use ScriptNameProvider;
@@ -73,8 +75,8 @@ class AppTest extends TestCase
         $app = new App([1 => $phpScriptPath]);
         try {
             $app->generateTranslatedScript();
-        } catch (FileNotReadable $exception) {
-            $this->fail(sprintf("Failed to translate the script: %s", $exception->getMessage()));
+        } catch (FileNotReadable $fileNotReadable) {
+            $this->fail(sprintf("Failed to translate the script: %s", $fileNotReadable->getMessage()));
         }
 
         $output = $this->fetchCommandOutput(

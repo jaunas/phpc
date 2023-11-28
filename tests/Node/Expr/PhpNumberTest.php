@@ -6,9 +6,11 @@ use Jaunas\PhpCompiler\Node\Expr\Number;
 use Jaunas\PhpCompiler\Node\Expr\PhpNumber;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(PhpNumber::class)]
+#[UsesClass(Number::class)]
 class PhpNumberTest extends TestCase
 {
     #[Test]

@@ -10,3 +10,6 @@ php:
 
 test:
 	@docker compose run php composer test
+
+fix:
+	@docker compose run php composer fix

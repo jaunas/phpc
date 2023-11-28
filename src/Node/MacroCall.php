@@ -17,10 +17,11 @@ readonly class MacroCall implements Node
     public function print(): string
     {
         $arguments = [];
-        if ($this->format !== null) {
+        if ($this->format instanceof String_) {
             $arguments[] = $this->format->print();
         }
-        if ($this->argument !== null) {
+
+        if ($this->argument instanceof Expr) {
             $arguments[] = $this->argument->print();
         }
 

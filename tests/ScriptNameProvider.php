@@ -14,6 +14,7 @@ trait ScriptNameProvider
             $scriptName = self::removeExtension($filename);
             $scriptNames[$scriptName] = [$scriptName];
         }
+
         return $scriptNames;
     }
 
@@ -26,7 +27,7 @@ trait ScriptNameProvider
             static::fail("Couldn't scan the directory");
         }
 
-        return array_filter($files, function ($filename) {
+        return array_filter($files, static function ($filename) {
             return preg_match('/\\.php$/', $filename);
         });
     }

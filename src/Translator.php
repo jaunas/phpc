@@ -11,6 +11,7 @@ use PhpParser\NodeTraverser;
 class Translator
 {
     private Fn_ $main;
+
     private NodeTraverser $traverser;
 
     public function __construct()

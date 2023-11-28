@@ -37,6 +37,7 @@ class Fn_ implements Node
         foreach ($this->body as $macroCall) {
             $body .= $macroCall->print();
         }
-        return "fn {$this->getName()}() {\n$body}\n";
+
+        return "fn {$this->getName()}() {\n{$body}}\n";
     }
 }

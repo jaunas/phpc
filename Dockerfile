@@ -4,10 +4,11 @@ ARG UNAME
 ARG GID
 ARG UID
 
-RUN apt-get update && apt-get install -y libzip-dev zip && docker-php-ext-install zip
+RUN apt-get update && apt-get install --no-install-recommends -y libzip-dev zip && apt-get clean
+RUN docker-php-ext-install zip
 RUN pecl install xdebug-3.2.1 && docker-php-ext-enable xdebug
-RUN groupadd -g $GID -o $UNAME
-RUN useradd -m -u $UID -g $GID -o -s /bin/bash $UNAME
+RUN groupadd -g ${GID} -o ${UNAME}
+RUN useradd -m -u ${UID} -g ${GID} -o -s /bin/bash ${UNAME}
 
 USER $UNAME
 

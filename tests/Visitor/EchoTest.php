@@ -4,6 +4,7 @@ namespace Jaunas\PhpCompiler\Tests\Visitor;
 
 use Jaunas\PhpCompiler\Node\Expr\BinaryOp as RustBinaryOp;
 use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
+use Jaunas\PhpCompiler\Node\Expr\PhpNumber as RustPhpNumber;
 use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
 use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
@@ -27,6 +28,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(RustMacroCall::class)]
 #[UsesClass(RustNumber::class)]
 #[UsesClass(RustBinaryOp::class)]
+#[UsesClass(RustPhpNumber::class)]
 class EchoTest extends TestCase
 {
     #[Test]
@@ -54,7 +56,7 @@ class EchoTest extends TestCase
 
         $this->assertCount(count($expected), $main->getBody());
         $print = array_map(
-            function (RustMacroCall $node) {
+            static function (RustMacroCall $node) {
                 return $node->print();
             },
             $main->getBody()

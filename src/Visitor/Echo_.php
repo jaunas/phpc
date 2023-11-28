@@ -29,6 +29,7 @@ class Echo_ extends NodeVisitorAbstract
                 $this->enterExpr($expr);
             }
         }
+
         return null;
     }
 
