@@ -30,6 +30,7 @@
         ],
         "phpunit": "phpunit -c tests/phpunit.xml",
         "coverage": "XDEBUG_MODE=coverage phpunit -c tests/phpunit.xml --coverage-html=coverage",
+        "coverage-xml": "phpunit -c tests/phpunit.xml --coverage-clover=coverage.xml",
         "phpcs": "phpcs --cache=.cache/.phpcs-cache && echo 'OK'",
         "phpstan": "phpstan analyse",
         "rector": "rector process -c tests/rector.php --dry-run",

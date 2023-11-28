@@ -4,7 +4,7 @@ ARG UNAME
 ARG GID
 ARG UID
 
-RUN apt-get update && apt-get install --no-install-recommends -y libzip-dev zip && apt-get clean
+RUN apt-get update && apt-get install --no-install-recommends -y libzip-dev zip unzip && apt-get clean
 RUN docker-php-ext-install zip
 RUN pecl install xdebug-3.2.1 && docker-php-ext-enable xdebug
 RUN groupadd -g ${GID} -o ${UNAME}
