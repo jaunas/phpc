@@ -1,4 +1,6 @@
 parameters:
+    bootstrapFiles:
+        - phpunit.phar
     level: 9
     paths:
         - src/

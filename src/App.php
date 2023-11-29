@@ -4,6 +4,7 @@ namespace Jaunas\PhpCompiler;
 
 use Jaunas\PhpCompiler\Exception\FileNotReadable;
 use PhpParser\ParserFactory;
+use PhpParser\PhpVersion;
 
 class App
 {
@@ -22,7 +23,7 @@ class App
      */
     public function generateTranslatedScript(): void
     {
-        $parser = (new ParserFactory())->create(ParserFactory::ONLY_PHP7);
+        $parser = (new ParserFactory())->createForVersion(PhpVersion::fromString('8.2'));
         $ast = $parser->parse($this->readPhpCode()) ?? [];
         $translator = new Translator();
 
