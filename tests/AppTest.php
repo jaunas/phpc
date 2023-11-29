@@ -8,6 +8,7 @@ use Jaunas\PhpCompiler\Node\Expr\BinaryOp as RustBinaryOp;
 use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
 use Jaunas\PhpCompiler\Node\Expr\PhpNumber as RustPhpNumber;
 use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
+use Jaunas\PhpCompiler\Node\Factory\PrintFactory;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
 use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
 use Jaunas\PhpCompiler\Translator;
@@ -29,6 +30,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(InlineHtmlVisitor::class)]
 #[UsesClass(RustBinaryOp::class)]
 #[UsesClass(RustPhpNumber::class)]
+#[UsesClass(PrintFactory::class)]
 class AppTest extends TestCase
 {
     use ScriptNameProvider;
