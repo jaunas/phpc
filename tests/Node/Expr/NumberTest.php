@@ -16,7 +16,7 @@ class NumberTest extends TestCase
     public function canPrint(string $expected, int $value): void
     {
         $number = new Number($value);
-        $this->assertEquals($expected, $number->print());
+        $this->assertEquals($expected, $number->getSource());
     }
 
     /**

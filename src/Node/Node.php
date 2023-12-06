@@ -4,5 +4,5 @@ namespace Jaunas\PhpCompiler\Node;
 
 interface Node
 {
-    public function print(): string;
+    public function getSource(): string;
 }

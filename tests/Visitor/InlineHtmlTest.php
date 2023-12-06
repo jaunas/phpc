@@ -40,6 +40,6 @@ class InlineHtmlTest extends TestCase
 
         $this->assertCount(1, $main->getBody());
         $print = $main->getBody()[0];
-        $this->assertEquals("print!(\"example text\");\n", $print->print());
+        $this->assertEquals("print!(\"example text\");\n", $print->getSource());
     }
 }

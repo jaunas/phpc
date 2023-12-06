@@ -16,7 +16,7 @@ class StringTest extends TestCase
     public function canPrint(string $expectedContent, string $content): void
     {
         $string = new String_($content);
-        $this->assertEquals($expectedContent, $string->print());
+        $this->assertEquals($expectedContent, $string->getSource());
     }
 
     /**

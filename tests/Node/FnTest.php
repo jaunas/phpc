@@ -62,7 +62,7 @@ class FnTest extends TestCase
     public function emptyFnPrint(string $name, string $expectedPrint): void
     {
         $fn = new Fn_($name);
-        $this->assertEquals($expectedPrint, $fn->print());
+        $this->assertEquals($expectedPrint, $fn->getSource());
     }
 
     #[Test]
@@ -72,6 +72,6 @@ class FnTest extends TestCase
         $println = new RustMacroCall('println');
         $fn->addToBody($println);
 
-        $this->assertEquals("fn main() {\nprintln!();\n}\n", $fn->print());
+        $this->assertEquals("fn main() {\nprintln!();\n}\n", $fn->getSource());
     }
 }

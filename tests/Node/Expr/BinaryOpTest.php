@@ -19,7 +19,7 @@ class BinaryOpTest extends TestCase
     public function canPrint(string $expected, string $sign, int $left, int $right): void
     {
         $plus = new BinaryOp($sign, new Number($left), new Number($right));
-        $this->assertEquals($expected, $plus->print());
+        $this->assertEquals($expected, $plus->getSource());
     }
 
     /**
@@ -33,5 +33,15 @@ class BinaryOpTest extends TestCase
             '5 - 3' => ['5_f64 - 3_f64', '-', 5, 3],
             '5 * 3' => ['5_f64 * 3_f64', '*', 5, 3],
         ];
+    }
+
+    #[Test]
+    public function canHaveNestedBinaryOp(): void
+    {
+        $left = new BinaryOp('+', new Number(3), new Number(4));
+        $right = new Number(5);
+
+        $nested = new BinaryOp('+', $left, $right);
+        $this->assertEquals('(3_f64 + 4_f64) + 5_f64', $nested->getSource());
     }
 }

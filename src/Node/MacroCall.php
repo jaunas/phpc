@@ -14,15 +14,15 @@ readonly class MacroCall implements Node
     ) {
     }
 
-    public function print(): string
+    public function getSource(): string
     {
         $arguments = [];
         if ($this->format instanceof String_) {
-            $arguments[] = $this->format->print();
+            $arguments[] = $this->format->getSource();
         }
 
         if ($this->argument instanceof Expr) {
-            $arguments[] = $this->argument->print();
+            $arguments[] = $this->argument->getSource();
         }
 
         return sprintf("%s!(%s);\n", $this->name, implode(', ', $arguments));

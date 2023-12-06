@@ -23,7 +23,7 @@ class MacroCallTest extends TestCase
     public function canPrint(string $expected, string $name): void
     {
         $macroCall = new MacroCall($name);
-        $this->assertEquals($expected, $macroCall->print());
+        $this->assertEquals($expected, $macroCall->getSource());
     }
 
     /**
@@ -48,7 +48,7 @@ class MacroCallTest extends TestCase
     public function canPrintWithAnArgument(string $expected, string $name, string $argument): void
     {
         $macroCall = new MacroCall($name, new RustString($argument));
-        $this->assertEquals($expected, $macroCall->print());
+        $this->assertEquals($expected, $macroCall->getSource());
     }
 
     /**
@@ -71,6 +71,6 @@ class MacroCallTest extends TestCase
     public function canPassTwoArguments(): void
     {
         $macroCall = new MacroCall('print', new RustString('{}'), new RustPhpNumber(new RustNumber(5)));
-        $this->assertEquals("print!(\"{}\", rust_php::PhpNumber::new(5_f64));\n", $macroCall->print());
+        $this->assertEquals("print!(\"{}\", rust_php::PhpNumber::new(5_f64));\n", $macroCall->getSource());
     }
 }

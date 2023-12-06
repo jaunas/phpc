@@ -11,12 +11,17 @@ echo "5 - 3 = " . 5 - 3 . "\n";
 echo "5 * 3 = " . 5 * 3 . "\n";
 echo "5 / 3 = " . 5 / 3 . "\n";
 
-//// Test 3: Parenthesis
-//echo "(5+3)=" . (5+3) . "\n";
-//echo "(5-3)=" . (5-3) . "\n";
-//echo "(5*3)=" . (5*3) . "\n";
-//echo "(5/3)=" . (5/3) . "\n";
-//
+// Test 3: Parenthesis
+echo "(5 + 3) =" . (5 + 3) . "\n";
+echo "(5 - 3) =" . (5 - 3) . "\n";
+echo "(5 * 3) =" . (5 * 3) . "\n";
+echo "(5 / 3) =" . (5 / 3) . "\n";
+echo "(3 - 4 + 5) =" . (3 - 4 + 5) . "\n";
+/** @phpstan-ignore-next-line */
+echo "(3 - 4) + 5 =" . (3 - 4) + 5 . "\n";
+/** @phpstan-ignore-next-line */
+echo "3 - (4 + 5) =" . 3 - (4 + 5) . "\n";
+
 //// Test 4: Logical expression
 //echo "Is 5 equal to 3? " . (5 == 3 ? "Yes" : "No") . "\n";
 //echo "Is 5 not equal to 3? " . (5 != 3 ? "Yes" : "No") . "\n";

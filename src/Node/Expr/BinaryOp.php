@@ -2,17 +2,23 @@
 
 namespace Jaunas\PhpCompiler\Node\Expr;
 
-class BinaryOp extends Expr
+class BinaryOp extends ArithmeticExpr
 {
     public function __construct(
         private readonly string $sign,
-        private readonly Number $left,
-        private readonly Number $right
+        private readonly ArithmeticExpr $left,
+        private readonly ArithmeticExpr $right
     ) {
     }
 
-    public function print(): string
+    public function getSource(): string
     {
-        return sprintf("%s %s %s", $this->left->print(), $this->sign, $this->right->print());
+        $left = $this->left instanceof BinaryOp
+            ? sprintf("(%s)", $this->left->getSource())
+            : $this->left->getSource();
+        $right = $this->right instanceof BinaryOp
+            ? sprintf("(%s)", $this->right->getSource())
+            : $this->right->getSource();
+        return sprintf("%s %s %s", $left, $this->sign, $right);
     }
 }

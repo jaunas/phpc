@@ -49,7 +49,7 @@ class TranslatorTest extends TestCase
 
         $prints = [];
         foreach ($ast as $print) {
-            $prints[] = $print->print();
+            $prints[] = $print->getSource();
         }
 
         $this->assertEquals($expected, $prints);

@@ -27,7 +27,7 @@ class App
         $ast = $parser->parse($this->readPhpCode()) ?? [];
         $translator = new Translator();
 
-        file_put_contents($this->getCompiledFilename(), $translator->translate($ast)->print());
+        file_put_contents($this->getCompiledFilename(), $translator->translate($ast)->getSource());
     }
 
     private function getCompiledFilename(): string

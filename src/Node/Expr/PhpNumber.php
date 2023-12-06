@@ -8,8 +8,8 @@ class PhpNumber extends Expr
     {
     }
 
-    public function print(): string
+    public function getSource(): string
     {
-        return sprintf("rust_php::PhpNumber::new(%s)", $this->expr->print());
+        return sprintf("rust_php::PhpNumber::new(%s)", $this->expr->getSource());
     }
 }

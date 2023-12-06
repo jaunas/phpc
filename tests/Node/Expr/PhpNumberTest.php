@@ -17,6 +17,6 @@ class PhpNumberTest extends TestCase
     public function canPrint(): void
     {
         $phpNumber = new PhpNumber(new Number(5));
-        $this->assertEquals('rust_php::PhpNumber::new(5_f64)', $phpNumber->print());
+        $this->assertEquals('rust_php::PhpNumber::new(5_f64)', $phpNumber->getSource());
     }
 }

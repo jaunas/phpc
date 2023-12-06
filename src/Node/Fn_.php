@@ -31,11 +31,11 @@ class Fn_ implements Node
         return $this->body;
     }
 
-    public function print(): string
+    public function getSource(): string
     {
         $body = '';
         foreach ($this->body as $macroCall) {
-            $body .= $macroCall->print();
+            $body .= $macroCall->getSource();
         }
 
         return "fn {$this->getName()}() {\n{$body}}\n";

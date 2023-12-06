@@ -8,7 +8,7 @@ class String_ extends Expr
     {
     }
 
-    public function print(): string
+    public function getSource(): string
     {
         return sprintf('"%s"', $this->content);
     }

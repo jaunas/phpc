@@ -2,7 +2,7 @@
 
 namespace Jaunas\PhpCompiler\Node\Factory;
 
-use Jaunas\PhpCompiler\Node\Expr\BinaryOp;
+use Jaunas\PhpCompiler\Node\Expr\ArithmeticExpr;
 use Jaunas\PhpCompiler\Node\Expr\Number;
 use Jaunas\PhpCompiler\Node\Expr\PhpNumber;
 use Jaunas\PhpCompiler\Node\Expr\String_;
@@ -16,7 +16,7 @@ class PrintFactory
     }
 
 
-    public static function createWithNumber(int|BinaryOp $number): MacroCall
+    public static function createWithNumber(int|ArithmeticExpr $number): MacroCall
     {
         if (is_numeric($number)) {
             $number = new Number($number);

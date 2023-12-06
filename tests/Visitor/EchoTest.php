@@ -14,7 +14,7 @@ use Jaunas\PhpCompiler\Visitor\Echo_ as EchoVisitor;
 use PhpParser\Node\Expr\BinaryOp\Concat as PhpConcat;
 use PhpParser\Node\Expr\BinaryOp\Minus as PhpMinus;
 use PhpParser\Node\Expr\BinaryOp\Plus as PhpPlus;
-use PhpParser\Node\Scalar\LNumber as PhpLNumber;
+use PhpParser\Node\Scalar\Int_ as PhpInt;
 use PhpParser\Node\Scalar\String_ as PhpString;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Echo_ as PhpEcho;
@@ -68,7 +68,7 @@ class EchoTest extends TestCase
             ],
             'number' => [
                 'expected' => [PrintFactory::createWithNumber(5)],
-                'stmt' => new PhpEcho([new PhpLNumber(5)]),
+                'stmt' => new PhpEcho([new PhpInt(5)]),
             ],
             'concat' => [
                 'expected' => [
@@ -88,7 +88,7 @@ class EchoTest extends TestCase
                 ],
                 'stmt' => new PhpEcho([
                     new PhpString('string'),
-                    new PhpLNumber(5),
+                    new PhpInt(5),
                     new PhpString('string again'),
                 ]),
             ],
@@ -97,8 +97,8 @@ class EchoTest extends TestCase
                     new RustBinaryOp('+', new RustNumber(5), new RustNumber(3))
                 )],
                 'stmt' => new PhpEcho([new PhpPlus(
-                    new PhpLNumber(5),
-                    new PhpLNumber(3)
+                    new PhpInt(5),
+                    new PhpInt(3)
                 )]),
             ],
             'minus' => [
@@ -107,9 +107,24 @@ class EchoTest extends TestCase
                 )],
                 'stmt' => new PhpEcho([
                     new PhpMinus(
-                        new PhpLNumber(5),
-                        new PhpLNumber(3)
+                        new PhpInt(5),
+                        new PhpInt(3)
                     ),
+                ]),
+            ],
+            'nested_binary_op' => [
+                'expected' => [PrintFactory::createWithNumber(
+                    new RustBinaryOp(
+                        '+',
+                        new RustBinaryOp('+', new RustNumber(3), new RustNumber(4)),
+                        new RustNumber(5)
+                    )
+                )],
+                'stmt' => new PhpEcho([
+                    new PhpPlus(
+                        new PhpPlus(new PhpInt(3), new PhpInt(4)),
+                        new PhpInt(5)
+                    )
                 ]),
             ],
         ];
