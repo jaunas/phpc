@@ -3,6 +3,7 @@
 namespace Jaunas\PhpCompiler\Node\Factory;
 
 use Jaunas\PhpCompiler\Node\Expr\ArithmeticExpr;
+use Jaunas\PhpCompiler\Node\Expr\Expr;
 use Jaunas\PhpCompiler\Node\Expr\Number;
 use Jaunas\PhpCompiler\Node\Expr\PhpNumber;
 use Jaunas\PhpCompiler\Node\Expr\String_;
@@ -23,5 +24,14 @@ class PrintFactory
         }
 
         return new MacroCall('print', new String_('{}'), new PhpNumber($number));
+    }
+
+    public static function createWithExpr(Expr $expr): MacroCall
+    {
+        if ($expr instanceof String_) {
+            return new MacroCall('print', $expr);
+        } else {
+            return new MacroCall('print', new String_('{}'), new PhpNumber($expr));
+        }
     }
 }

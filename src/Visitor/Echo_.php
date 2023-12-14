@@ -3,14 +3,21 @@
 namespace Jaunas\PhpCompiler\Visitor;
 
 use Jaunas\PhpCompiler\Node\Expr\ArithmeticExpr;
+use Jaunas\PhpCompiler\Node\Expr\Bool_ as RustBool;
+use Jaunas\PhpCompiler\Node\Expr\Expr;
+use Jaunas\PhpCompiler\Node\Expr\If_ as RustIf;
 use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
 use Jaunas\PhpCompiler\Node\Expr\BinaryOp as RustBinaryOp;
+use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
 use Jaunas\PhpCompiler\Node\Factory\PrintFactory;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
+use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
 use PhpParser\Node;
 use PhpParser\Node\Expr as PhpExpr;
 use PhpParser\Node\Expr\BinaryOp as PhpBinaryOp;
 use PhpParser\Node\Expr\BinaryOp\Concat as PhpConcat;
+use PhpParser\Node\Expr\ConstFetch;
+use PhpParser\Node\Expr\Ternary as PhpTernary;
 use PhpParser\Node\Scalar\Int_ as PhpInt;
 use PhpParser\Node\Scalar\String_ as PhpString;
 use PhpParser\Node\Stmt\Echo_ as PhpEcho;
@@ -26,26 +33,56 @@ class Echo_ extends NodeVisitorAbstract
     {
         if ($node instanceof PhpEcho) {
             foreach ($node->exprs as $expr) {
-                $this->enterExpr($expr);
+                foreach ($this->getMacroCalls($expr) as $macroCall) {
+                    $this->fn->addToBody($macroCall);
+                }
             }
         }
 
         return null;
     }
 
-    private function enterExpr(Node $node): void
+    /**
+     * @return RustMacroCall[]
+     */
+    private function getMacroCalls(Node $node): array
     {
-        if ($node instanceof PhpString) {
-            $this->fn->addToBody(PrintFactory::createWithString($node->value));
-        } elseif ($node instanceof PhpConcat) {
-            $this->enterExpr($node->left);
-            $this->enterExpr($node->right);
-        } elseif ($node instanceof PhpInt || $node instanceof PhpBinaryOp) {
-            $arithmeticExpr = $this->getArithmeticExpr($node);
-            if ($arithmeticExpr instanceof ArithmeticExpr) {
-                $this->fn->addToBody(PrintFactory::createWithNumber($arithmeticExpr));
+        if ($node instanceof PhpConcat) {
+            return [...$this->getMacroCalls($node->left), ...$this->getMacroCalls($node->right)];
+        } elseif ($node instanceof PhpTernary && $node->cond instanceof ConstFetch) {
+            $condition = $this->getBoolExpr($node->cond);
+            $then = $this->getExpr($node->if);
+            $else = $this->getExpr($node->else);
+            if ($condition instanceof RustBool && $then instanceof Expr && $else instanceof Expr) {
+                return [new RustMacroCall(
+                    'print',
+                    new RustString('{}'),
+                    new RustIf($condition, $then, $else)
+                )];
+            }
+        } elseif (
+            $node instanceof PhpString ||
+            $node instanceof PhpInt ||
+            $node instanceof PhpBinaryOp
+        ) {
+            $expr = $this->getExpr($node);
+            if ($expr instanceof Expr) {
+                return [PrintFactory::createWithExpr($expr)];
             }
         }
+
+        return [];
+    }
+
+    private function getExpr(?PhpExpr $node): ?Expr
+    {
+        if ($node instanceof PhpString) {
+            return new RustString($node->value);
+        } elseif ($node instanceof PhpInt || $node instanceof PhpBinaryOp) {
+            return $this->getArithmeticExpr($node);
+        }
+
+        return null;
     }
 
     private function getArithmeticExpr(PhpExpr $node): ?ArithmeticExpr
@@ -63,5 +100,17 @@ class Echo_ extends NodeVisitorAbstract
         }
 
         return null;
+    }
+
+    public function getBoolExpr(ConstFetch $node): ?RustBool
+    {
+        $name = $node->name->name;
+        if ($name == 'true') {
+            $condition = new RustBool(true);
+        } elseif ($name == 'false') {
+            $condition = new RustBool(false);
+        }
+
+        return $condition ?? null;
     }
 }

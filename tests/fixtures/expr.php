@@ -22,6 +22,16 @@ echo "(3 - 4) + 5 =" . (3 - 4) + 5 . "\n";
 /** @phpstan-ignore-next-line */
 echo "3 - (4 + 5) =" . 3 - (4 + 5) . "\n";
 
+// Test 4: Ternary operator
+/** @phpstan-ignore-next-line */
+echo "true ? 'true' : 'false' = " . (true ? 'true' : 'false') . "\n";
+/** @phpstan-ignore-next-line */
+echo "false ? 'true' : 'false' = " . (false ? 'true' : 'false') . "\n";
+/** @phpstan-ignore-next-line */
+echo "true ? 5 : 3 = " . (true ? 5 : 3) . "\n";
+/** @phpstan-ignore-next-line */
+echo "false ? 5 : 3 = " . (false ? 5 : 3) . "\n";
+
 //// Test 4: Logical expression
 //echo "Is 5 equal to 3? " . (5 == 3 ? "Yes" : "No") . "\n";
 //echo "Is 5 not equal to 3? " . (5 != 3 ? "Yes" : "No") . "\n";

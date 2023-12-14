@@ -3,17 +3,21 @@
 namespace Jaunas\PhpCompiler\Tests\Visitor;
 
 use Jaunas\PhpCompiler\Node\Expr\BinaryOp as RustBinaryOp;
+use Jaunas\PhpCompiler\Node\Expr\Bool_ as RustBool;
+use Jaunas\PhpCompiler\Node\Expr\If_ as RustIf;
 use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
 use Jaunas\PhpCompiler\Node\Expr\PhpNumber as RustPhpNumber;
 use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
 use Jaunas\PhpCompiler\Node\Factory\PrintFactory;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
-use Jaunas\PhpCompiler\Node\MacroCall;
 use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
 use Jaunas\PhpCompiler\Visitor\Echo_ as EchoVisitor;
 use PhpParser\Node\Expr\BinaryOp\Concat as PhpConcat;
 use PhpParser\Node\Expr\BinaryOp\Minus as PhpMinus;
 use PhpParser\Node\Expr\BinaryOp\Plus as PhpPlus;
+use PhpParser\Node\Expr\ConstFetch as PhpConstFetch;
+use PhpParser\Node\Expr\Ternary as PhpTernary;
+use PhpParser\Node\Name as PhpName;
 use PhpParser\Node\Scalar\Int_ as PhpInt;
 use PhpParser\Node\Scalar\String_ as PhpString;
 use PhpParser\Node\Stmt;
@@ -36,7 +40,7 @@ use PHPUnit\Framework\TestCase;
 class EchoTest extends TestCase
 {
     /**
-     * @param MacroCall[] $expected
+     * @param RustMacroCall[] $expected
      */
     #[Test]
     #[DataProvider('echoProvider')]
@@ -126,6 +130,30 @@ class EchoTest extends TestCase
                         new PhpInt(5)
                     )
                 ]),
+            ],
+            'ternary_number' => [
+                'expected' => [new RustMacroCall(
+                    'print',
+                    new RustString('{}'),
+                    new RustIf(new RustBool(true), new RustNumber(5), new RustNumber(3))
+                )],
+                'stmt' => new PhpEcho([new PhpTernary(
+                    new PhpConstFetch(new PhpName('true')),
+                    new PhpInt(5),
+                    new PhpInt(3)
+                )]),
+            ],
+            'ternary_string' => [
+                'expected' => [new RustMacroCall(
+                    'print',
+                    new RustString('{}'),
+                    new RustIf(new RustBool(true), new RustString('true'), new RustString('false'))
+                )],
+                'stmt' => new PhpEcho([new PhpTernary(
+                    new PhpConstFetch(new PhpName('true')),
+                    new PhpString('true'),
+                    new PhpString('false')
+                )]),
             ],
         ];
     }

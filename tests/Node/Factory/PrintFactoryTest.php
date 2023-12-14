@@ -52,4 +52,24 @@ class PrintFactoryTest extends TestCase
 
         $this->assertEquals($expected, $print);
     }
+
+    #[Test]
+    public function createPrintWithStringExpr(): void
+    {
+        $stringExpr = new String_('test string');
+        $expected = new MacroCall('print', $stringExpr);
+
+        $print = PrintFactory::createWithExpr($stringExpr);
+        $this->assertEquals($expected, $print);
+    }
+
+    #[Test]
+    public function createPrintWithNumberExpr(): void
+    {
+        $numberExpr =  new Number(5);
+        $expected = new MacroCall('print', new String_('{}'), new PhpNumber($numberExpr));
+
+        $print = PrintFactory::createWithExpr($numberExpr);
+        $this->assertEquals($expected, $print);
+    }
 }
