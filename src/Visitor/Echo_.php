@@ -49,11 +49,11 @@ class Echo_ extends NodeVisitorAbstract
     {
         if ($node instanceof PhpConcat) {
             return [...$this->getMacroCalls($node->left), ...$this->getMacroCalls($node->right)];
-        } elseif ($node instanceof PhpTernary && $node->cond instanceof ConstFetch) {
-            $condition = $this->getBoolExpr($node->cond);
+        } elseif ($node instanceof PhpTernary) {
+            $condition = $this->getExpr($node->cond);
             $then = $this->getExpr($node->if);
             $else = $this->getExpr($node->else);
-            if ($condition instanceof RustBool && $then instanceof Expr && $else instanceof Expr) {
+            if ($condition instanceof Expr && $then instanceof Expr && $else instanceof Expr) {
                 return [new RustMacroCall(
                     'print',
                     new RustString('{}'),
@@ -78,39 +78,45 @@ class Echo_ extends NodeVisitorAbstract
     {
         if ($node instanceof PhpString) {
             return new RustString($node->value);
-        } elseif ($node instanceof PhpInt || $node instanceof PhpBinaryOp) {
-            return $this->getArithmeticExpr($node);
         }
 
-        return null;
-    }
-
-    private function getArithmeticExpr(PhpExpr $node): ?ArithmeticExpr
-    {
         if ($node instanceof PhpInt) {
             return new RustNumber($node->value);
         }
 
         if ($node instanceof PhpBinaryOp) {
-            $left = $this->getArithmeticExpr($node->left);
-            $right = $this->getArithmeticExpr($node->right);
-            if ($left instanceof ArithmeticExpr && $right instanceof ArithmeticExpr) {
-                return new RustBinaryOp($node->getOperatorSigil(), $left, $right);
-            }
+            return $this->getPhpBinaryOpExpr($node);
+        }
+
+        if ($node instanceof ConstFetch) {
+            return $this->getConstFetchExpr($node);
         }
 
         return null;
     }
 
-    public function getBoolExpr(ConstFetch $node): ?RustBool
+    private function getPhpBinaryOpExpr(PhpBinaryOp $node): ?RustBinaryOp
+    {
+        $left = $this->getExpr($node->left);
+        $right = $this->getExpr($node->right);
+        if ($left instanceof ArithmeticExpr && $right instanceof ArithmeticExpr) {
+            return new RustBinaryOp($node->getOperatorSigil(), $left, $right);
+        }
+
+        return null;
+    }
+
+    private function getConstFetchExpr(ConstFetch $node): ?RustBool
     {
         $name = $node->name->name;
         if ($name == 'true') {
-            $condition = new RustBool(true);
-        } elseif ($name == 'false') {
-            $condition = new RustBool(false);
+            return new RustBool(true);
         }
 
-        return $condition ?? null;
+        if ($name == 'false') {
+            return new RustBool(false);
+        }
+
+        return null;
     }
 }

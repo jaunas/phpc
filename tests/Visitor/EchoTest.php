@@ -13,6 +13,7 @@ use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
 use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
 use Jaunas\PhpCompiler\Visitor\Echo_ as EchoVisitor;
 use PhpParser\Node\Expr\BinaryOp\Concat as PhpConcat;
+use PhpParser\Node\Expr\BinaryOp\Equal as PhpEqual;
 use PhpParser\Node\Expr\BinaryOp\Minus as PhpMinus;
 use PhpParser\Node\Expr\BinaryOp\Plus as PhpPlus;
 use PhpParser\Node\Expr\ConstFetch as PhpConstFetch;
@@ -155,6 +156,22 @@ class EchoTest extends TestCase
                     new PhpString('false')
                 )]),
             ],
+            'equal' => [
+                'expected' => [new RustMacroCall(
+                    'print',
+                    new RustString('{}'),
+                    new RustIf(
+                        new RustBinaryOp('==', new RustNumber(5), new RustNumber(3)),
+                        new RustString('equal'),
+                        new RustString('not equal')
+                    )
+                )],
+                'stmt' => new PhpEcho([new PhpTernary(
+                    new PhpEqual(new PhpInt(5), new PhpInt(3)),
+                    new PhpString('equal'),
+                    new PhpString('not equal')
+                )]),
+            ]
         ];
     }
 }

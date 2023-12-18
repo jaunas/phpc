@@ -32,14 +32,14 @@ echo "true ? 5 : 3 = " . (true ? 5 : 3) . "\n";
 /** @phpstan-ignore-next-line */
 echo "false ? 5 : 3 = " . (false ? 5 : 3) . "\n";
 
-//// Test 4: Logical expression
-//echo "Is 5 equal to 3? " . (5 == 3 ? "Yes" : "No") . "\n";
-//echo "Is 5 not equal to 3? " . (5 != 3 ? "Yes" : "No") . "\n";
-//echo "Is 5 greater than 3? " . (5 > 3 ? "Yes" : "No") . "\n";
-//echo "Is 5 greater than or equal to 3? " . (5 >= 3 ? "Yes" : "No") . "\n";
-//echo "Is 5 less than 3? " . (5 < 3 ? "Yes" : "No") . "\n";
-//echo "Is 5 less than or equal to 3? " . (5 <= 3 ? "Yes" : "No") . "\n";
-//
+// Test 4: Logical expression
+echo "Is 5 equal to 3? " . (5 == 3 ? "Yes" : "No") . "\n";
+echo "Is 5 not equal to 3? " . (5 != 3 ? "Yes" : "No") . "\n";
+echo "Is 5 greater than 3? " . (5 > 3 ? "Yes" : "No") . "\n";
+echo "Is 5 greater than or equal to 3? " . (5 >= 3 ? "Yes" : "No") . "\n";
+echo "Is 5 less than 3? " . (5 < 3 ? "Yes" : "No") . "\n";
+echo "Is 5 less than or equal to 3? " . (5 <= 3 ? "Yes" : "No") . "\n";
+
 //// Test 5: Bitwise expression
 //echo "Result of bitwise AND operation: " . (5 & 3) . "\n";
 //echo "Result of bitwise OR operation: " . (5 | 3) . "\n";
