@@ -33,7 +33,7 @@ class FnTest extends TestCase
 
     #[Test]
     #[DataProvider('fnProvider')]
-    public function getName(string $name): void
+    public function getName(string $name, string $print): void
     {
         $fn = new Fn_($name);
         $this->assertEquals($name, $fn->getName());
@@ -59,10 +59,10 @@ class FnTest extends TestCase
 
     #[Test]
     #[DataProvider('fnProvider')]
-    public function emptyFnPrint(string $name, string $expectedPrint): void
+    public function emptyFnPrint(string $name, string $print): void
     {
         $fn = new Fn_($name);
-        $this->assertEquals($expectedPrint, $fn->getSource());
+        $this->assertEquals($print, $fn->getSource());
     }
 
     #[Test]

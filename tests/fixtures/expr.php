@@ -4,9 +4,7 @@
 echo "Hello, World!\n";
 
 // Test 2: Mathematical expressions
-/** @phpstan-ignore-next-line TODO: Remove after it's fixed in PhpStan */
 echo "5 + 3 = " . 5 + 3 . "\n";
-/** @phpstan-ignore-next-line */
 echo "5 - 3 = " . 5 - 3 . "\n";
 echo "5 * 3 = " . 5 * 3 . "\n";
 echo "5 / 3 = " . 5 / 3 . "\n";
@@ -17,19 +15,13 @@ echo "(5 - 3) =" . (5 - 3) . "\n";
 echo "(5 * 3) =" . (5 * 3) . "\n";
 echo "(5 / 3) =" . (5 / 3) . "\n";
 echo "(3 - 4 + 5) =" . (3 - 4 + 5) . "\n";
-/** @phpstan-ignore-next-line */
 echo "(3 - 4) + 5 =" . (3 - 4) + 5 . "\n";
-/** @phpstan-ignore-next-line */
 echo "3 - (4 + 5) =" . 3 - (4 + 5) . "\n";
 
 // Test 4: Ternary operator
-/** @phpstan-ignore-next-line */
 echo "true ? 'true' : 'false' = " . (true ? 'true' : 'false') . "\n";
-/** @phpstan-ignore-next-line */
 echo "false ? 'true' : 'false' = " . (false ? 'true' : 'false') . "\n";
-/** @phpstan-ignore-next-line */
 echo "true ? 5 : 3 = " . (true ? 5 : 3) . "\n";
-/** @phpstan-ignore-next-line */
 echo "false ? 5 : 3 = " . (false ? 5 : 3) . "\n";
 
 // Test 4: Logical expression

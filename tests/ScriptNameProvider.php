@@ -28,7 +28,7 @@ trait ScriptNameProvider
         }
 
         return array_filter($files, static function ($filename) {
-            return preg_match('/\\.php$/', $filename);
+            return preg_match('/\\.php$/', $filename) === 1;
         });
     }
 

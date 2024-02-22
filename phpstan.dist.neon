@@ -1,7 +1,7 @@
 parameters:
-    bootstrapFiles:
-        - phpunit.phar
     level: 9
     paths:
         - src/
         - tests/
+    excludePaths:
+        - tests/fixtures/expr.php
