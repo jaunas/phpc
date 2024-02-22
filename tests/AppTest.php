@@ -59,10 +59,7 @@ class AppTest extends TestCase
             $this->fail('File not found');
         }
 
-        $this->assertFileEquals(
-            $this->getFixturePath('empty.expected.rs'),
-            $this->getFixturePath('empty.rs')
-        );
+        $this->assertStringEqualsFile($this->getFixturePath('empty.rs'), "fn main() {\n}\n");
 
         unlink($this->getFixturePath('empty.rs'));
     }
