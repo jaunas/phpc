@@ -36,7 +36,8 @@
         "rector": "rector process -c tests/rector.php --dry-run",
         "rector-fix": "rector process -c tests/rector.php",
         "phpcbf": "phpcbf",
-        "test": ["@phpcs", "@rector", "@phpstan", "@phpunit"],
+        "cargo-test": "cd rust-php && cargo test",
+        "test": ["@phpcs", "@rector", "@phpstan", "@phpunit", "@cargo-test"],
         "fix": ["@phpcbf", "@rector-fix"]
     }
 }
