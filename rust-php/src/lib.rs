@@ -37,9 +37,9 @@ impl Value {
 
     fn trim(number: f64) -> String {
         format!("{:.13}", number)
-        .trim_end_matches('0')
-        .trim_end_matches('.')
-        .to_string()
+            .trim_end_matches('0')
+            .trim_end_matches('.')
+            .to_string()
     }
 }
 
@@ -114,7 +114,7 @@ mod tests {
 
     #[test]
     fn number_float_to_string() {
-        let number = Value::Number(5_f64/3_f64);
+        let number = Value::Number(5_f64 / 3_f64);
         assert_eq!("1.6666666666667", number.to_string());
     }
 }

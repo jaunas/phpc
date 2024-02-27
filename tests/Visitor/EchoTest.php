@@ -31,13 +31,15 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(EchoVisitor::class)]
+#[UsesClass(RustBinaryOp::class)]
+#[UsesClass(RustBool::class)]
+#[UsesClass(RustIf::class)]
+#[UsesClass(RustNumber::class)]
+#[UsesClass(RustPhpNumber::class)]
 #[UsesClass(RustString::class)]
+#[UsesClass(PrintFactory::class)]
 #[UsesClass(RustFn::class)]
 #[UsesClass(RustMacroCall::class)]
-#[UsesClass(RustNumber::class)]
-#[UsesClass(RustBinaryOp::class)]
-#[UsesClass(RustPhpNumber::class)]
-#[UsesClass(PrintFactory::class)]
 class EchoTest extends TestCase
 {
     /**

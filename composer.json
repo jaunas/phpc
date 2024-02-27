@@ -36,8 +36,14 @@
         "rector": "rector process -c tests/rector.php --dry-run",
         "rector-fix": "rector process -c tests/rector.php",
         "phpcbf": "phpcbf",
-        "cargo-test": "cd rust-php && cargo test",
-        "test": ["@phpcs", "@rector", "@phpstan", "@phpunit", "@cargo-test"],
-        "fix": ["@phpcbf", "@rector-fix"]
+        "php-check": ["@phpcs", "@rector", "@phpstan", "@phpunit"],
+        "php-fix": ["@phpcbf", "@rector-fix"],
+        "rust-fmt": "cd rust-php && cargo fmt --check",
+        "rust-clippy": "cd rust-php && cargo clippy",
+        "rust-test": "cd rust-php && cargo test",
+        "rust-check": ["@rust-fmt", "@rust-test"],
+        "rust-fix": "cd rust-php && cargo fmt",
+        "test": ["@php-check", "@rust-check"],
+        "fix": ["@php-fix", "@rust-fix"]
     }
 }
