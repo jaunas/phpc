@@ -7,7 +7,7 @@ use Jaunas\PhpCompiler\Node\Expr\Bool_ as RustBool;
 use Jaunas\PhpCompiler\Node\Expr\If_ as RustIf;
 use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
 use Jaunas\PhpCompiler\Node\Expr\PhpNumber as RustPhpNumber;
-use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
+use Jaunas\PhpCompiler\Node\Expr\StrRef;
 use Jaunas\PhpCompiler\Node\Factory\PrintFactory;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
 use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
@@ -36,7 +36,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(RustIf::class)]
 #[UsesClass(RustNumber::class)]
 #[UsesClass(RustPhpNumber::class)]
-#[UsesClass(RustString::class)]
+#[UsesClass(StrRef::class)]
 #[UsesClass(PrintFactory::class)]
 #[UsesClass(RustFn::class)]
 #[UsesClass(RustMacroCall::class)]
@@ -137,7 +137,7 @@ class EchoTest extends TestCase
             'ternary_number' => [
                 'expected' => [new RustMacroCall(
                     'print',
-                    new RustString('{}'),
+                    new StrRef('{}'),
                     new RustIf(new RustBool(true), new RustNumber(5), new RustNumber(3))
                 )],
                 'stmt' => new PhpEcho([new PhpTernary(
@@ -149,8 +149,8 @@ class EchoTest extends TestCase
             'ternary_string' => [
                 'expected' => [new RustMacroCall(
                     'print',
-                    new RustString('{}'),
-                    new RustIf(new RustBool(true), new RustString('true'), new RustString('false'))
+                    StrRef::placeholder(),
+                    new RustIf(new RustBool(true), new StrRef('true'), new StrRef('false'))
                 )],
                 'stmt' => new PhpEcho([new PhpTernary(
                     new PhpConstFetch(new PhpName('true')),
@@ -161,11 +161,11 @@ class EchoTest extends TestCase
             'equal' => [
                 'expected' => [new RustMacroCall(
                     'print',
-                    new RustString('{}'),
+                    StrRef::placeholder(),
                     new RustIf(
                         new RustBinaryOp('==', new RustNumber(5), new RustNumber(3)),
-                        new RustString('equal'),
-                        new RustString('not equal')
+                        new StrRef('equal'),
+                        new StrRef('not equal')
                     )
                 )],
                 'stmt' => new PhpEcho([new PhpTernary(

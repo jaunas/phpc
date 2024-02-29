@@ -5,7 +5,7 @@ namespace Jaunas\PhpCompiler\Tests\Node\Expr;
 use Jaunas\PhpCompiler\Node\Expr\Bool_;
 use Jaunas\PhpCompiler\Node\Expr\If_;
 use Jaunas\PhpCompiler\Node\Expr\Number;
-use Jaunas\PhpCompiler\Node\Expr\String_;
+use Jaunas\PhpCompiler\Node\Expr\StrRef;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -15,14 +15,14 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(If_::class)]
 #[UsesClass(Bool_::class)]
 #[UsesClass(Number::class)]
-#[UsesClass(String_::class)]
+#[UsesClass(StrRef::class)]
 class IfTest extends TestCase
 {
     #[Test]
     #[DataProvider('stringProvider')]
     public function canPrintWithString(string $expected, bool $condition, string $then, string $else): void
     {
-        $if = new If_(new Bool_($condition), new String_($then), new String_($else));
+        $if = new If_(new Bool_($condition), new StrRef($then), new StrRef($else));
         $this->assertEquals($expected, $if->getSource());
     }
 

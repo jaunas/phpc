@@ -2,7 +2,7 @@
 
 namespace Jaunas\PhpCompiler\Tests\Visitor;
 
-use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
+use Jaunas\PhpCompiler\Node\Expr\StrRef;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
 use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
 use Jaunas\PhpCompiler\Visitor\InlineHtml as InlineHtmlVisitor;
@@ -14,7 +14,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(InlineHtmlVisitor::class)]
-#[UsesClass(RustString::class)]
+#[UsesClass(StrRef::class)]
 #[UsesClass(RustFn::class)]
 #[UsesClass(RustMacroCall::class)]
 class InlineHtmlTest extends TestCase

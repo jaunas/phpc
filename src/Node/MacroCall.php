@@ -3,13 +3,13 @@
 namespace Jaunas\PhpCompiler\Node;
 
 use Jaunas\PhpCompiler\Node\Expr\Expr;
-use Jaunas\PhpCompiler\Node\Expr\String_;
+use Jaunas\PhpCompiler\Node\Expr\StrRef;
 
 readonly class MacroCall implements Node
 {
     public function __construct(
         private string $name,
-        private ?String_ $format = null,
+        private ?StrRef $format = null,
         private ?Expr $argument = null
     ) {
     }
@@ -17,7 +17,7 @@ readonly class MacroCall implements Node
     public function getSource(): string
     {
         $arguments = [];
-        if ($this->format instanceof String_) {
+        if ($this->format instanceof StrRef) {
             $arguments[] = $this->format->getSource();
         }
 

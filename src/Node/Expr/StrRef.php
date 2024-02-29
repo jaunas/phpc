@@ -2,7 +2,7 @@
 
 namespace Jaunas\PhpCompiler\Node\Expr;
 
-class String_ extends Expr
+class StrRef extends Expr
 {
     public function __construct(private readonly string $content)
     {
@@ -11,5 +11,10 @@ class String_ extends Expr
     public function getSource(): string
     {
         return sprintf('"%s"', $this->content);
+    }
+
+    public static function placeholder(): self
+    {
+        return new StrRef('{}');
     }
 }

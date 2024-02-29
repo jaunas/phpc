@@ -9,7 +9,7 @@ use Jaunas\PhpCompiler\Node\Expr\Bool_ as RustBool;
 use Jaunas\PhpCompiler\Node\Expr\If_ as RustIf;
 use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
 use Jaunas\PhpCompiler\Node\Expr\PhpNumber as RustPhpNumber;
-use Jaunas\PhpCompiler\Node\Expr\String_ as RustString;
+use Jaunas\PhpCompiler\Node\Expr\StrRef;
 use Jaunas\PhpCompiler\Node\Factory\PrintFactory;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
 use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(RustIf::class)]
 #[UsesClass(RustNumber::class)]
 #[UsesClass(RustPhpNumber::class)]
-#[UsesClass(RustString::class)]
+#[UsesClass(StrRef::class)]
 #[UsesClass(PrintFactory::class)]
 #[UsesClass(RustFn::class)]
 #[UsesClass(RustMacroCall::class)]
