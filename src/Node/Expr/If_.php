@@ -2,12 +2,12 @@
 
 namespace Jaunas\PhpCompiler\Node\Expr;
 
-class If_ extends Expr
+readonly class If_ implements Expr
 {
     public function __construct(
-        private readonly Expr $condition,
-        private readonly Expr $then,
-        private readonly Expr $else
+        private Expr $condition,
+        private Expr $then,
+        private Expr $else
     ) {
     }
 

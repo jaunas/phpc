@@ -2,9 +2,9 @@
 
 namespace Jaunas\PhpCompiler\Node\Expr;
 
-class Bool_ extends Expr
+readonly class Bool_ implements Expr
 {
-    public function __construct(private readonly bool $value)
+    public function __construct(private bool $value)
     {
     }
 

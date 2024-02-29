@@ -2,6 +2,6 @@
 
 namespace Jaunas\PhpCompiler\Node\Expr;
 
-abstract class ArithmeticExpr extends Expr
+interface ArithmeticExpr extends Expr
 {
 }

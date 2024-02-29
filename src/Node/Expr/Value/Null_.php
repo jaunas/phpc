@@ -4,7 +4,7 @@ namespace Jaunas\PhpCompiler\Node\Expr\Value;
 
 use Jaunas\PhpCompiler\Node\Expr\Expr;
 
-class Null_ extends Expr
+class Null_ implements Expr
 {
     public function getSource(): string
     {

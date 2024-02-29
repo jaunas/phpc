@@ -5,7 +5,7 @@ namespace Jaunas\PhpCompiler\Node\Expr\Value;
 use Jaunas\PhpCompiler\Node\Expr\Expr;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
 
-class String_ extends Expr
+readonly class String_ implements Expr
 {
     public function __construct(private readonly StrRef $content)
     {

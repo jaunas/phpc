@@ -2,9 +2,9 @@
 
 namespace Jaunas\PhpCompiler\Node\Expr;
 
-class Number extends ArithmeticExpr
+readonly class Number implements ArithmeticExpr
 {
-    public function __construct(private readonly int $value)
+    public function __construct(private int $value)
     {
     }
 

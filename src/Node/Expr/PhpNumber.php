@@ -2,9 +2,9 @@
 
 namespace Jaunas\PhpCompiler\Node\Expr;
 
-class PhpNumber extends Expr
+readonly class PhpNumber implements Expr
 {
-    public function __construct(private readonly Expr $expr)
+    public function __construct(private Expr $expr)
     {
     }
 

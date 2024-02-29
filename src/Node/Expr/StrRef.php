@@ -2,9 +2,9 @@
 
 namespace Jaunas\PhpCompiler\Node\Expr;
 
-class StrRef extends Expr
+readonly class StrRef implements Expr
 {
-    public function __construct(private readonly string $content)
+    public function __construct(private string $content)
     {
     }
 
