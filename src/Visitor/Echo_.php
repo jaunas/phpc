@@ -9,6 +9,8 @@ use Jaunas\PhpCompiler\Node\Expr\If_ as RustIf;
 use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
 use Jaunas\PhpCompiler\Node\Expr\BinaryOp as RustBinaryOp;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
+use Jaunas\PhpCompiler\Node\Expr\Value\Concat;
+use Jaunas\PhpCompiler\Node\Expr\Value\Null_;
 use Jaunas\PhpCompiler\Node\Factory\PrintFactory;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
 use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
@@ -54,16 +56,13 @@ class Echo_ extends NodeVisitorAbstract
             $then = $this->getExpr($node->if);
             $else = $this->getExpr($node->else);
             if ($condition instanceof Expr && $then instanceof Expr && $else instanceof Expr) {
-                return [new RustMacroCall(
-                    'print',
-                    StrRef::placeholder(),
-                    new RustIf($condition, $then, $else)
-                )];
+                return [new RustMacroCall('print', StrRef::placeholder(), new RustIf($condition, $then, $else))];
             }
         } elseif ($node instanceof PhpString) {
             return [PrintFactory::createWithString($node->value)];
+        } elseif ($node instanceof PhpInt) {
+            return [PrintFactory::createWithNumberValue($node->value)];
         } elseif (
-            $node instanceof PhpInt ||
             $node instanceof PhpBinaryOp
         ) {
             $expr = $this->getExpr($node);

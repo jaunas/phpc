@@ -74,7 +74,7 @@ class EchoTest extends TestCase
                 'stmt' => new PhpEcho([new PhpString('Example text')]),
             ],
             'number' => [
-                'expected' => [PrintFactory::createWithNumber(5)],
+                'expected' => [PrintFactory::createWithNumberValue(5)],
                 'stmt' => new PhpEcho([new PhpInt(5)]),
             ],
             'concat' => [
@@ -90,7 +90,7 @@ class EchoTest extends TestCase
             'comma' => [
                 'expected' => [
                     PrintFactory::createWithString('string'),
-                    PrintFactory::createWithNumber(5),
+                    PrintFactory::createWithNumberValue(5),
                     PrintFactory::createWithString('string again'),
                 ],
                 'stmt' => new PhpEcho([

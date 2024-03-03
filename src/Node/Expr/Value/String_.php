@@ -2,12 +2,11 @@
 
 namespace Jaunas\PhpCompiler\Node\Expr\Value;
 
-use Jaunas\PhpCompiler\Node\Expr\Expr;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
 
-readonly class String_ implements Expr
+readonly class String_ implements Value
 {
-    public function __construct(private readonly StrRef $content)
+    public function __construct(private StrRef $content)
     {
     }
 

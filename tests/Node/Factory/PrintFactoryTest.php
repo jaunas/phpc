@@ -7,6 +7,7 @@ use Jaunas\PhpCompiler\Node\Expr\Number;
 use Jaunas\PhpCompiler\Node\Expr\PhpNumber;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
 use Jaunas\PhpCompiler\Node\Expr\Value\Null_;
+use Jaunas\PhpCompiler\Node\Expr\Value\Number as NumberValue;
 use Jaunas\PhpCompiler\Node\Expr\Value\String_;
 use Jaunas\PhpCompiler\Node\Factory\PrintFactory;
 use Jaunas\PhpCompiler\Node\MacroCall;
@@ -24,6 +25,16 @@ use PHPUnit\Framework\TestCase;
 class PrintFactoryTest extends TestCase
 {
     #[Test]
+    public function createPrintWithValue(): void
+    {
+        $value = new Null_();
+        $expected = new MacroCall('print', StrRef::placeholder(), $value);
+        $print = PrintFactory::createWithValue($value);
+
+        $this->assertEquals($expected, $print);
+    }
+
+    #[Test]
     public function createPrintWithNull(): void
     {
         $expected = new MacroCall('print', StrRef::placeholder(), new Null_());
@@ -37,6 +48,15 @@ class PrintFactoryTest extends TestCase
     {
         $expected = new MacroCall('print', StrRef::placeholder(), String_::fromString('test string'));
         $print = PrintFactory::createWithString('test string');
+
+        $this->assertEquals($expected, $print);
+    }
+
+    #[Test]
+    public function createPrintWithNumberValue(): void
+    {
+        $expected = new MacroCall('print', StrRef::placeholder(), new NumberValue(5));
+        $print = PrintFactory::createWithNumberValue(5);
 
         $this->assertEquals($expected, $print);
     }
