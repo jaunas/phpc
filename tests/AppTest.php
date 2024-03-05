@@ -39,15 +39,10 @@ class AppTest extends TestCase
 {
     use ScriptNameProvider;
 
-    private function getFixturePath(string $filename): string
-    {
-        return sprintf('%s/fixtures/%s', __DIR__, $filename);
-    }
-
     #[Test]
     public function translationFailsWhenNoFile(): void
     {
-        $app = new App([1 => $this->getFixturePath('not_exists.php')]);
+        $app = new App([1 => $this->getScriptPath('not_exists', 'php')]);
 
         $this->expectException(FileNotReadable::class);
         $app->generateTranslatedScript();
@@ -56,61 +51,50 @@ class AppTest extends TestCase
     #[Test]
     public function generatesTranslatedScript(): void
     {
-        $app = new App([1 => $this->getFixturePath('empty.php')]);
-        try {
-            $app->generateTranslatedScript();
-        } catch (FileNotReadable) {
-            $this->fail('File not found');
-        }
+        $this->generateTranslatedScript('empty');
 
-        $this->assertStringEqualsFile($this->getFixturePath('empty.rs'), "fn main() {\n}\n");
+        $rustScriptPath = $this->getScriptPath('empty', 'rs');
+        $this->assertStringEqualsFile($rustScriptPath, "fn main() {\n}\n");
 
-        unlink($this->getFixturePath('empty.rs'));
+        unlink($rustScriptPath);
     }
 
     #[Test]
     #[DataProvider('scriptNameProvider')]
     public function translatedOutputsMatch(string $scriptName): void
     {
-        $phpScriptPath = $this->getScriptPath($scriptName, 'php');
-        $rustScriptPath = $this->getScriptPath($scriptName, 'rs');
+        $this->generateTranslatedScript($scriptName);
 
+        $rustResult = $this->fetchRustResult($scriptName);
+        $phpResult = $this->fetchPhpResult($scriptName);
+
+        $this->assertEquals($phpResult, $rustResult);
+    }
+
+    private function generateTranslatedScript(string $scriptName): void
+    {
+        $phpScriptPath = $this->getScriptPath($scriptName, 'php');
         $app = new App([1 => $phpScriptPath]);
+
         try {
             $app->generateTranslatedScript();
         } catch (FileNotReadable $fileNotReadable) {
             $this->fail(sprintf("Failed to translate the script: %s", $fileNotReadable->getMessage()));
         }
-
-        $output = $this->fetchCommandOutput(
-            sprintf('cargo run --example %s', $scriptName),
-            __DIR__ . '/../rust-php'
-        );
-        unlink($rustScriptPath);
-
-        $expectedOutput = $this->fetchCommandOutput(sprintf('php %s', $phpScriptPath));
-
-        $this->assertEquals($expectedOutput, $output);
     }
 
-    private function fetchCommandOutput(string $command, ?string $workingDirectory = null): string
+    private function fetchRustResult(string $scriptName): ProcessResult
     {
-        $pipeMap = [
-            0 => ['pipe', 'r'],
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w'],
-        ];
-        $process = proc_open($command, $pipeMap, $pipes, $workingDirectory);
-        if (is_resource($process)) {
-            $output = stream_get_contents($pipes[1]);
-            fclose($pipes[1]);
-            proc_close($process);
-        }
+        $scriptPath = $this->getScriptPath($scriptName, 'rs');
+        $result = new ProcessResult(['cargo', 'run', '-q', '--example', $scriptName], __DIR__ . '/../rust-php');
+        unlink($scriptPath);
 
-        if (!isset($output) || $output === false) {
-            $this->fail('Failed to fetch command output');
-        }
+        return $result;
+    }
 
-        return $output;
+    private function fetchPhpResult(string $scriptName): ProcessResult
+    {
+        $scriptPath = $this->getScriptPath($scriptName, 'php');
+        return new ProcessResult(['php', $scriptPath], null);
     }
 }
