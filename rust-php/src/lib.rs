@@ -26,7 +26,7 @@ impl fmt::Display for PhpNumber {
     }
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum Value {
     Null,
     String(String),
@@ -65,24 +65,36 @@ impl fmt::Display for Value {
     }
 }
 
-impl TryFrom<Value> for f64 {
+impl TryFrom<Value> for (f64, bool) {
     type Error = ();
 
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
-            Value::Null => Ok(0.0),
-            Value::String(_) => Err(()),
-            Value::Number(number) => Ok(number),
+            Value::Null => Ok((0.0, false)),
+            Value::String(string) => convert_string_to_float(string),
+            Value::Number(number) => Ok((number, false)),
         }
     }
 }
 
+fn convert_string_to_float(string: String) -> Result<(f64, bool), ()> {
+    let regex = regex::Regex::new(r"^\s*(?P<number>-?\d+(\.\d+)?)\s*(?P<suffix>.*)$").unwrap();
+    let Some(captures) = regex.captures(&string) else {
+        return Err(());
+    };
+
+    Ok((
+        captures["number"].parse::<f64>().unwrap(),
+        !captures["suffix"].is_empty(),
+    ))
+}
+
 fn unwrap_floats_or_panic(lhs: Value, rhs: Value) -> (f64, f64) {
     let lhs_type = lhs.type_name();
-    let float_lhs: Result<f64, ()> = lhs.try_into();
+    let float_lhs: Result<(f64, bool), ()> = lhs.try_into();
 
     let rhs_type = rhs.type_name();
-    let float_rhs: Result<f64, ()> = rhs.try_into();
+    let float_rhs: Result<(f64, bool), ()> = rhs.try_into();
 
     if float_lhs.is_err() || float_rhs.is_err() {
         panic!(
@@ -91,7 +103,7 @@ fn unwrap_floats_or_panic(lhs: Value, rhs: Value) -> (f64, f64) {
         );
     }
 
-    (float_lhs.unwrap(), float_rhs.unwrap())
+    (float_lhs.unwrap().0, float_rhs.unwrap().0)
 }
 
 macro_rules! impl_binary_op {
@@ -128,43 +140,51 @@ mod tests {
     }
 
     #[test]
-    fn compare_nulls() {
-        let left = Value::Null;
-        let right = Value::Null;
-        assert!(left == right);
+    fn compare_equal() {
+        let pairs = vec![
+            (Value::Null, Value::Null),
+            (
+                Value::String("equal".to_string()),
+                Value::String("equal".to_string()),
+            ),
+            (Value::Number(5.0), Value::Number(5.0)),
+            // TODO Add comparisons with casting
+        ];
+
+        for (left, right) in pairs {
+            assert_eq!(left, right);
+        }
     }
 
     #[test]
-    fn null_to_string() {
-        let null = Value::Null;
-        assert_eq!("", null.to_string());
+    fn compare_not_equal() {
+        let pairs = vec![
+            (
+                Value::String("left".to_string()),
+                Value::String("right".to_string()),
+            ),
+            (Value::Number(5.0), Value::Number(3.14)),
+            (Value::String("text".to_string()), Value::Null),
+            // TODO Add comparisons with casting
+        ];
+
+        for (left, right) in pairs {
+            assert_ne!(left, right);
+        }
     }
 
     #[test]
-    fn compare_different_strings() {
-        let left = Value::String("left".to_string());
-        let right = Value::String("right".to_string());
-        assert!(!(left == right));
-    }
+    fn to_string() {
+        let examples = vec![
+            ("", Value::Null),
+            ("text", Value::String("text".to_string())),
+            ("5", Value::Number(5.0)),
+            ("1.6666666666667", Value::Number(5.0 / 3.0)),
+        ];
 
-    #[test]
-    fn compare_equal_strings() {
-        let left = Value::String("equal".to_string());
-        let right = Value::String("equal".to_string());
-        assert!(left == right);
-    }
-
-    #[test]
-    fn compare_string_and_null() {
-        let string = Value::String("string".to_string());
-        let null = Value::Null;
-        assert!(!(string == null));
-    }
-
-    #[test]
-    fn string_to_string() {
-        let string = Value::String("string".to_string());
-        assert_eq!("string", string.to_string());
+        for (expected, value) in examples {
+            assert_eq!(expected, value.to_string());
+        }
     }
 
     #[test]
@@ -173,115 +193,147 @@ mod tests {
         let right_string = Value::String("right".to_string());
 
         let concat = left_string.concat(right_string);
-        assert!(Value::String("leftright".to_string()) == concat);
-    }
-
-    #[test]
-    fn number_int_to_string() {
-        let number = Value::Number(5_f64);
-        assert_eq!("5", number.to_string());
-    }
-
-    #[test]
-    fn number_float_to_string() {
-        let number = Value::Number(5_f64 / 3_f64);
-        assert_eq!("1.6666666666667", number.to_string());
+        assert_eq!(Value::String("leftright".to_string()), concat);
     }
 
     // Cast to float
-
     #[test]
-    fn null_to_float() {
-        let number = Value::Null;
-        let float: Result<f64, ()> = number.try_into();
-        assert!(float.is_ok());
-        assert_eq!(0.0, float.unwrap());
+    fn to_float() {
+        let examples = vec![
+            ((0.0, false), Value::Null),
+            ((5.0, false), Value::Number(5.0)),
+            ((5.0, false), Value::String("5".to_string())),
+            ((3.14, false), Value::String(" 3.14 ".to_string())),
+            ((3.14, true), Value::String("3.14foobar".to_string())),
+        ];
+
+        for (expected, value) in examples {
+            let float: Result<(f64, bool), ()> = value.try_into();
+            assert!(float.is_ok());
+            assert_eq!(expected, float.unwrap());
+        }
     }
 
     #[test]
-    fn string_to_float() {
-        let string = Value::String("text".to_string());
-        let float: Result<f64, ()> = string.try_into();
-        assert!(float.is_err());
+    fn to_float_failure() {
+        let values = vec![
+            Value::String("text".to_string()),
+            Value::String("foobar3.14".to_string()),
+        ];
+
+        for value in values {
+            let float: Result<(f64, bool), ()> = value.try_into();
+            assert!(float.is_err());
+        }
     }
 
     #[test]
-    fn number_to_float() {
-        let number = Value::Number(3.14);
-        let float: Result<f64, ()> = number.try_into();
-        assert!(float.is_ok());
-        assert_eq!(3.14, float.unwrap());
-    }
+    fn type_of() {
+        let examples = vec![
+            ("null", Value::Null),
+            ("number", Value::Number(5.0)),
+            ("string", Value::String("text".to_string())),
+        ];
 
-    #[test]
-    fn type_of_null_value() {
-        assert_eq!("null", Value::Null.type_name());
-    }
-
-    #[test]
-    fn type_of_string_value() {
-        assert_eq!("string", Value::String("text".to_string()).type_name());
+        for (expected, value) in examples {
+            assert_eq!(expected, value.type_name());
+        }
     }
 
     // Add
-
     #[test]
-    fn null_plus_null() {
-        let result = Value::Null + Value::Null;
-        assert_eq!(Value::Number(0.0), result);
+    fn math_operations() {
+        let examples = vec![
+            (
+                (Value::Number(0.0), Value::Number(0.0), Value::Number(0.0)),
+                (Value::Null, Value::Null),
+            ),
+            (
+                (
+                    Value::Number(3.14),
+                    Value::Number(-3.14),
+                    Value::Number(0.0),
+                ),
+                (Value::Null, Value::Number(3.14)),
+            ),
+            (
+                (Value::Number(3.14), Value::Number(3.14), Value::Number(0.0)),
+                (Value::Number(3.14), Value::Null),
+            ),
+            (
+                (
+                    Value::Number(1.8599999999999999),
+                    Value::Number(-8.14),
+                    Value::Number(-15.700000000000001),
+                ),
+                (
+                    Value::String(" -3.14foobar".to_string()),
+                    Value::Number(5.0),
+                ),
+            ),
+        ];
+
+        for ((add, sub, mul), (left, right)) in examples {
+            macro_rules! assert_opperation {
+                ($expected:ident, $op:tt) => {
+                    assert_eq!($expected, left.clone() $op right.clone(), "{:?} {} {:?}", left.clone(), stringify!($op), right.clone());
+                };
+            }
+
+            assert_opperation!(add, +);
+            assert_opperation!(sub, -);
+            assert_opperation!(mul, *);
+        }
     }
 
     #[test]
-    fn null_plus_number() {
-        let result = Value::Null + Value::Number(3.14);
-        assert_eq!(Value::Number(3.14), result);
+    fn divide() {
+        let examples = vec![
+            (Value::Number(0.0), (Value::Null, Value::Number(3.14))),
+            (
+                Value::Number(-0.628),
+                (
+                    Value::String(" -3.14foobar".to_string()),
+                    Value::Number(5.0),
+                ),
+            ),
+        ];
+
+        for (expected, (left, right)) in examples {
+            assert_eq!(
+                expected,
+                left.clone() / right.clone(),
+                "{:?} / {:?}",
+                left.clone(),
+                right.clone()
+            );
+        }
     }
 
     #[test]
-    fn number_plus_null() {
-        let result = Value::Number(3.14) + Value::Null;
-        assert_eq!(Value::Number(3.14), result);
-    }
+    fn incorrect_math_operations() {
+        let examples = vec![
+            (
+                "TypeError: Unsupported operand types: null + string",
+                (Value::Null, Value::String("text".to_string())),
+            ),
+            (
+                "TypeError: Unsupported operand types: string + null",
+                (Value::String("text".to_string()), Value::Null),
+            ),
+            (
+                "TypeError: Unsupported operand types: string + number",
+                (Value::String("foobar-3.14".to_string()), Value::Number(5.0)),
+            ),
+        ];
 
-    #[test]
-    fn null_plus_string() {
-        let result = catch_unwind_silent(|| Value::Null + Value::String("text".to_string()));
-        assert!(result.is_err());
-        let err = result.unwrap_err();
-        let msg = err.downcast::<String>().unwrap();
-        assert_eq!(
-            "TypeError: Unsupported operand types: null + string",
-            msg.to_string()
-        );
-    }
+        for (expected, (left, right)) in examples {
+            let result = catch_unwind_silent(|| left + right);
+            assert!(result.is_err());
 
-    #[test]
-    fn string_plus_null() {
-        let result = catch_unwind_silent(|| Value::String("text".to_string()) + Value::Null);
-        assert!(result.is_err());
-        let err = result.unwrap_err();
-        let msg = err.downcast::<String>().unwrap();
-        assert_eq!(
-            "TypeError: Unsupported operand types: string + null",
-            msg.to_string()
-        );
-    }
-
-    #[test]
-    fn number_minus_number() {
-        let result = Value::Number(3.14) - Value::Number(5.0);
-        assert_eq!(Value::Number(-1.8599999999999999), result);
-    }
-
-    #[test]
-    fn number_multiply_number() {
-        let result = Value::Number(3.14) * Value::Number(5.0);
-        assert_eq!(Value::Number(15.700000000000001), result);
-    }
-
-    #[test]
-    fn number_divide_number() {
-        let result = Value::Number(3.14) / Value::Number(5.0);
-        assert_eq!(Value::Number(0.628), result);
+            let err = result.unwrap_err();
+            let msg = err.downcast::<String>().unwrap();
+            assert_eq!(expected, msg.to_string());
+        }
     }
 }
