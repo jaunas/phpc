@@ -3,34 +3,12 @@ use std::{
     ops::{Add, Div, Mul, Sub},
 };
 
-pub struct PhpNumber {
-    value: f64,
-}
-
-impl PhpNumber {
-    pub fn new(value: f64) -> Self {
-        PhpNumber { value }
-    }
-
-    fn trim_leading_zeroes(&self) -> String {
-        format!("{:.13}", self.value)
-            .trim_end_matches('0')
-            .trim_end_matches('.')
-            .to_owned()
-    }
-}
-
-impl fmt::Display for PhpNumber {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.trim_leading_zeroes())
-    }
-}
-
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, PartialOrd, Debug, Clone)]
 pub enum Value {
     Null,
     String(String),
     Number(f64),
+    Bool(bool),
 }
 
 impl Value {
@@ -50,8 +28,18 @@ impl Value {
             Value::Null => "null",
             Value::String(_) => "string",
             Value::Number(_) => "number",
+            Value::Bool(_) => "bool",
         }
         .to_string()
+    }
+
+    pub fn to_bool(self) -> bool {
+        match self {
+            Value::Null => todo!(),
+            Value::String(_) => todo!(),
+            Value::Number(_) => todo!(),
+            Value::Bool(bool) => bool,
+        }
     }
 }
 
@@ -61,6 +49,7 @@ impl fmt::Display for Value {
             Value::Null => write!(f, ""),
             Value::String(string) => write!(f, "{}", string),
             Value::Number(number) => write!(f, "{}", Value::trim(*number)),
+            Value::Bool(bool) => write!(f, "{}", if *bool { "1" } else { "" }),
         }
     }
 }
@@ -73,6 +62,7 @@ impl TryFrom<Value> for (f64, bool) {
             Value::Null => Ok((0.0, false)),
             Value::String(string) => convert_string_to_float(string),
             Value::Number(number) => Ok((number, false)),
+            Value::Bool(bool) => Ok((if bool { 1.0 } else { 0.0 }, false)),
         }
     }
 }
@@ -132,10 +122,10 @@ mod tests {
     fn catch_unwind_silent<F: FnOnce() -> R + panic::UnwindSafe, R>(
         f: F,
     ) -> std::thread::Result<R> {
-        let prev_hook = panic::take_hook();
-        panic::set_hook(Box::new(|_| {}));
+//         let prev_hook = panic::take_hook();
+//         panic::set_hook(Box::new(|_| {}));
         let result = panic::catch_unwind(f);
-        panic::set_hook(prev_hook);
+//         panic::set_hook(prev_hook);
         result
     }
 
@@ -148,7 +138,7 @@ mod tests {
                 Value::String("equal".to_string()),
             ),
             (Value::Number(5.0), Value::Number(5.0)),
-            // TODO Add comparisons with casting
+            (Value::Bool(false), Value::Bool(false)),
         ];
 
         for (left, right) in pairs {
@@ -165,11 +155,25 @@ mod tests {
             ),
             (Value::Number(5.0), Value::Number(3.14)),
             (Value::String("text".to_string()), Value::Null),
-            // TODO Add comparisons with casting
+            (Value::Number(3.14), Value::String("3.14".to_string())),
+            (Value::Bool(true), Value::Bool(false)),
         ];
 
         for (left, right) in pairs {
             assert_ne!(left, right);
+        }
+    }
+
+    #[test]
+    fn compare_less() {
+        let examples = vec![
+            (false, (Value::Null, Value::Null)),
+            (true, (Value::Number(3.14), Value::Number(5.0))),
+            (false, (Value::Number(5.0), Value::Number(3.14))),
+        ];
+
+        for (expected, (left, right)) in examples {
+            assert_eq!(expected, left < right);
         }
     }
 
@@ -180,6 +184,8 @@ mod tests {
             ("text", Value::String("text".to_string())),
             ("5", Value::Number(5.0)),
             ("1.6666666666667", Value::Number(5.0 / 3.0)),
+            ("", Value::Bool(false)),
+            ("1", Value::Bool(true)),
         ];
 
         for (expected, value) in examples {
@@ -205,6 +211,8 @@ mod tests {
             ((5.0, false), Value::String("5".to_string())),
             ((3.14, false), Value::String(" 3.14 ".to_string())),
             ((3.14, true), Value::String("3.14foobar".to_string())),
+            ((0.0, false), Value::Bool(false)),
+            ((1.0, false), Value::Bool(true)),
         ];
 
         for (expected, value) in examples {
@@ -228,11 +236,21 @@ mod tests {
     }
 
     #[test]
+    fn to_bool() {
+        let values = vec![(true, Value::Bool(true)), (false, Value::Bool(false))];
+
+        for (expected, value) in values {
+            assert_eq!(expected, value.to_bool());
+        }
+    }
+
+    #[test]
     fn type_of() {
         let examples = vec![
             ("null", Value::Null),
             ("number", Value::Number(5.0)),
             ("string", Value::String("text".to_string())),
+            ("bool", Value::Bool(true)),
         ];
 
         for (expected, value) in examples {

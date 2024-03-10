@@ -35,21 +35,12 @@ class PrintFactory
         return self::createWithValue(new NumberValue($number));
     }
 
-    public static function createWithNumber(int|ArithmeticExpr $number): MacroCall
-    {
-        if (is_numeric($number)) {
-            $number = new Number($number);
-        }
-
-        return new MacroCall('print', StrRef::placeholder(), new PhpNumber($number));
-    }
-
     public static function createWithExpr(Expr $expr): MacroCall
     {
         if ($expr instanceof StrRef) {
             return new MacroCall('print', $expr);
         } else {
-            return new MacroCall('print', StrRef::placeholder(), new PhpNumber($expr));
+            return new MacroCall('print', StrRef::placeholder(), $expr);
         }
     }
 }

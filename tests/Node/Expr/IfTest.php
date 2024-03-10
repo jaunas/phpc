@@ -2,9 +2,10 @@
 
 namespace Jaunas\PhpCompiler\Tests\Node\Expr;
 
-use Jaunas\PhpCompiler\Node\Expr\Bool_;
+use Jaunas\PhpCompiler\Node\Expr\FnCall;
+use Jaunas\PhpCompiler\Node\Expr\Value\Bool_;
 use Jaunas\PhpCompiler\Node\Expr\If_;
-use Jaunas\PhpCompiler\Node\Expr\Number;
+use Jaunas\PhpCompiler\Node\Expr\Value\Number;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -16,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Bool_::class)]
 #[UsesClass(Number::class)]
 #[UsesClass(StrRef::class)]
+#[UsesClass(FnCall::class)]
 class IfTest extends TestCase
 {
     #[Test]
@@ -32,8 +34,8 @@ class IfTest extends TestCase
     public static function stringProvider(): array
     {
         return [
-            ['if true { "true" } else { "false" }', true, 'true', 'false'],
-            ['if false { "false" } else { "true" }', false, 'false', 'true'],
+            ['if rust_php::Value::Bool(true).to_bool() { "true" } else { "false" }', true, 'true', 'false'],
+            ['if rust_php::Value::Bool(false).to_bool() { "false" } else { "true" }', false, 'false', 'true'],
         ];
     }
 
@@ -41,6 +43,19 @@ class IfTest extends TestCase
     public function canPrintWithNumber(): void
     {
         $if = new If_(new Bool_(true), new Number(5), new Number(8));
-        $this->assertEquals('if true { 5_f64 } else { 8_f64 }', $if->getSource());
+        $expected =
+            'if rust_php::Value::Bool(true).to_bool() { rust_php::Value::Number(5_f64) } else { ' .
+            'rust_php::Value::Number(8_f64) }';
+        $this->assertEquals(
+            $expected,
+            $if->getSource()
+        );
+    }
+
+    #[Test]
+    public function canPrintWithExpr(): void
+    {
+        $if = new If_(new FnCall('condition_fn'), new FnCall('then_fn'), new FnCall('else_fn'));
+        $this->assertEquals('if condition_fn() { then_fn() } else { else_fn() }', $if->getSource());
     }
 }

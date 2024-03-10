@@ -2,7 +2,7 @@
 
 namespace Jaunas\PhpCompiler\Node\Expr\Value;
 
-class Null_ implements Value
+readonly class Null_ implements Value
 {
     public function getSource(): string
     {

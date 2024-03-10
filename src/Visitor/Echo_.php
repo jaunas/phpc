@@ -2,23 +2,20 @@
 
 namespace Jaunas\PhpCompiler\Visitor;
 
-use Jaunas\PhpCompiler\Node\Expr\ArithmeticExpr;
-use Jaunas\PhpCompiler\Node\Expr\Bool_ as RustBool;
 use Jaunas\PhpCompiler\Node\Expr\Expr;
-use Jaunas\PhpCompiler\Node\Expr\If_ as RustIf;
-use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
-use Jaunas\PhpCompiler\Node\Expr\BinaryOp as RustBinaryOp;
+use Jaunas\PhpCompiler\Node\Expr\If_;
+use Jaunas\PhpCompiler\Node\Expr\BinaryOp;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
-use Jaunas\PhpCompiler\Node\Expr\Value\Concat;
-use Jaunas\PhpCompiler\Node\Expr\Value\Null_;
+use Jaunas\PhpCompiler\Node\Expr\Value\Bool_;
+use Jaunas\PhpCompiler\Node\Expr\Value\Number;
 use Jaunas\PhpCompiler\Node\Factory\PrintFactory;
-use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
-use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
+use Jaunas\PhpCompiler\Node\Fn_;
+use Jaunas\PhpCompiler\Node\MacroCall;
 use PhpParser\Node;
 use PhpParser\Node\Expr as PhpExpr;
 use PhpParser\Node\Expr\BinaryOp as PhpBinaryOp;
 use PhpParser\Node\Expr\BinaryOp\Concat as PhpConcat;
-use PhpParser\Node\Expr\ConstFetch;
+use PhpParser\Node\Expr\ConstFetch as PhpConstFetch;
 use PhpParser\Node\Expr\Ternary as PhpTernary;
 use PhpParser\Node\Scalar\Int_ as PhpInt;
 use PhpParser\Node\Scalar\String_ as PhpString;
@@ -27,7 +24,7 @@ use PhpParser\NodeVisitorAbstract;
 
 class Echo_ extends NodeVisitorAbstract
 {
-    public function __construct(private readonly RustFn $fn)
+    public function __construct(private readonly Fn_ $fn)
     {
     }
 
@@ -45,7 +42,7 @@ class Echo_ extends NodeVisitorAbstract
     }
 
     /**
-     * @return RustMacroCall[]
+     * @return MacroCall[]
      */
     private function getMacroCalls(Node $node): array
     {
@@ -56,7 +53,7 @@ class Echo_ extends NodeVisitorAbstract
             $then = $this->getExpr($node->if);
             $else = $this->getExpr($node->else);
             if ($condition instanceof Expr && $then instanceof Expr && $else instanceof Expr) {
-                return [new RustMacroCall('print', StrRef::placeholder(), new RustIf($condition, $then, $else))];
+                return [new MacroCall('print', StrRef::placeholder(), new If_($condition, $then, $else))];
             }
         } elseif ($node instanceof PhpString) {
             return [PrintFactory::createWithString($node->value)];
@@ -81,40 +78,40 @@ class Echo_ extends NodeVisitorAbstract
         }
 
         if ($node instanceof PhpInt) {
-            return new RustNumber($node->value);
+            return new Number($node->value);
         }
 
         if ($node instanceof PhpBinaryOp) {
             return $this->getPhpBinaryOpExpr($node);
         }
 
-        if ($node instanceof ConstFetch) {
+        if ($node instanceof PhpConstFetch) {
             return $this->getConstFetchExpr($node);
         }
 
         return null;
     }
 
-    private function getPhpBinaryOpExpr(PhpBinaryOp $node): ?RustBinaryOp
+    private function getPhpBinaryOpExpr(PhpBinaryOp $node): ?BinaryOp
     {
         $left = $this->getExpr($node->left);
         $right = $this->getExpr($node->right);
-        if ($left instanceof ArithmeticExpr && $right instanceof ArithmeticExpr) {
-            return new RustBinaryOp($node->getOperatorSigil(), $left, $right);
+        if ($left instanceof Expr && $right instanceof Expr) {
+            return new BinaryOp($node->getOperatorSigil(), $left, $right);
         }
 
         return null;
     }
 
-    private function getConstFetchExpr(ConstFetch $node): ?RustBool
+    private function getConstFetchExpr(PhpConstFetch $node): ?Bool_
     {
         $name = $node->name->name;
         if ($name == 'true') {
-            return new RustBool(true);
+            return new Bool_(true);
         }
 
         if ($name == 'false') {
-            return new RustBool(false);
+            return new Bool_(false);
         }
 
         return null;

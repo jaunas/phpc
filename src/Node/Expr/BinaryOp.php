@@ -2,12 +2,12 @@
 
 namespace Jaunas\PhpCompiler\Node\Expr;
 
-readonly class BinaryOp implements ArithmeticExpr
+readonly class BinaryOp implements Expr
 {
     public function __construct(
         private string $sign,
-        private ArithmeticExpr $left,
-        private ArithmeticExpr $right
+        private Expr $left,
+        private Expr $right
     ) {
     }
 

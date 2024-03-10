@@ -2,7 +2,6 @@
 
 namespace Jaunas\PhpCompiler\Tests;
 
-use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
 use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
@@ -21,7 +20,6 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(RustFn::class)]
 #[UsesClass(StrRef::class)]
 #[UsesClass(RustMacroCall::class)]
-#[UsesClass(RustNumber::class)]
 #[UsesClass(EchoVisitor::class)]
 #[UsesClass(InlineHtmlVisitor::class)]
 class TranslatorTest extends TestCase

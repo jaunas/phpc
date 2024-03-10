@@ -5,11 +5,12 @@ namespace Jaunas\PhpCompiler\Tests;
 use Jaunas\PhpCompiler\App;
 use Jaunas\PhpCompiler\Exception\FileNotReadable;
 use Jaunas\PhpCompiler\Node\Expr\BinaryOp as RustBinaryOp;
-use Jaunas\PhpCompiler\Node\Expr\Bool_ as RustBool;
+use Jaunas\PhpCompiler\Node\Expr\FnCall;
 use Jaunas\PhpCompiler\Node\Expr\If_ as RustIf;
-use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
-use Jaunas\PhpCompiler\Node\Expr\PhpNumber as RustPhpNumber;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
+use Jaunas\PhpCompiler\Node\Expr\Value\Bool_;
+use Jaunas\PhpCompiler\Node\Expr\Value\Number;
+use Jaunas\PhpCompiler\Node\Expr\Value\String_;
 use Jaunas\PhpCompiler\Node\Factory\PrintFactory;
 use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
 use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
@@ -24,10 +25,7 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(App::class)]
 #[UsesClass(RustBinaryOp::class)]
-#[UsesClass(RustBool::class)]
 #[UsesClass(RustIf::class)]
-#[UsesClass(RustNumber::class)]
-#[UsesClass(RustPhpNumber::class)]
 #[UsesClass(StrRef::class)]
 #[UsesClass(PrintFactory::class)]
 #[UsesClass(RustFn::class)]
@@ -35,6 +33,10 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(Translator::class)]
 #[UsesClass(EchoVisitor::class)]
 #[UsesClass(InlineHtmlVisitor::class)]
+#[UsesClass(String_::class)]
+#[UsesClass(Number::class)]
+#[UsesClass(Bool_::class)]
+#[UsesClass(FnCall::class)]
 class AppTest extends TestCase
 {
     use ScriptNameProvider;

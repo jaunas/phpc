@@ -2,15 +2,16 @@
 
 namespace Jaunas\PhpCompiler\Tests\Visitor;
 
-use Jaunas\PhpCompiler\Node\Expr\BinaryOp as RustBinaryOp;
-use Jaunas\PhpCompiler\Node\Expr\Bool_ as RustBool;
-use Jaunas\PhpCompiler\Node\Expr\If_ as RustIf;
-use Jaunas\PhpCompiler\Node\Expr\Number as RustNumber;
-use Jaunas\PhpCompiler\Node\Expr\PhpNumber as RustPhpNumber;
+use Jaunas\PhpCompiler\Node\Expr\BinaryOp;
+use Jaunas\PhpCompiler\Node\Expr\FnCall;
+use Jaunas\PhpCompiler\Node\Expr\If_;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
+use Jaunas\PhpCompiler\Node\Expr\Value\Bool_;
+use Jaunas\PhpCompiler\Node\Expr\Value\Number;
+use Jaunas\PhpCompiler\Node\Expr\Value\String_;
 use Jaunas\PhpCompiler\Node\Factory\PrintFactory;
-use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
-use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
+use Jaunas\PhpCompiler\Node\Fn_;
+use Jaunas\PhpCompiler\Node\MacroCall;
 use Jaunas\PhpCompiler\Visitor\Echo_ as EchoVisitor;
 use PhpParser\Node\Expr\BinaryOp\Concat as PhpConcat;
 use PhpParser\Node\Expr\BinaryOp\Equal as PhpEqual;
@@ -31,25 +32,26 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(EchoVisitor::class)]
-#[UsesClass(RustBinaryOp::class)]
-#[UsesClass(RustBool::class)]
-#[UsesClass(RustIf::class)]
-#[UsesClass(RustNumber::class)]
-#[UsesClass(RustPhpNumber::class)]
+#[UsesClass(BinaryOp::class)]
+#[UsesClass(Bool_::class)]
+#[UsesClass(If_::class)]
+#[UsesClass(Number::class)]
 #[UsesClass(StrRef::class)]
 #[UsesClass(PrintFactory::class)]
-#[UsesClass(RustFn::class)]
-#[UsesClass(RustMacroCall::class)]
+#[UsesClass(Fn_::class)]
+#[UsesClass(MacroCall::class)]
+#[UsesClass(String_::class)]
+#[UsesClass(FnCall::class)]
 class EchoTest extends TestCase
 {
     /**
-     * @param RustMacroCall[] $expected
+     * @param MacroCall[] $expected
      */
     #[Test]
     #[DataProvider('echoProvider')]
     public function addsPrintToFn(array $expected, Stmt $stmt): void
     {
-        $main = new RustFn('main');
+        $main = new Fn_('main');
         $visitor = new EchoVisitor($main);
         $visitor->enterNode($stmt);
 
@@ -58,12 +60,15 @@ class EchoTest extends TestCase
 
     /**
      * @return array<string, array{
-     *     expected: RustMacroCall[],
+     *     expected: MacroCall[],
      *     stmt: Stmt
      * }>
      */
     public static function echoProvider(): array
     {
+        $trueToBool = new FnCall('to_bool');
+        $trueToBool->setSubject(new Bool_(true));
+
         return [
             'no_match' => [
                 'expected' => [],
@@ -100,8 +105,8 @@ class EchoTest extends TestCase
                 ]),
             ],
             'plus' => [
-                'expected' => [PrintFactory::createWithNumber(
-                    new RustBinaryOp('+', new RustNumber(5), new RustNumber(3))
+                'expected' => [PrintFactory::createWithExpr(
+                    new BinaryOp('+', new Number(5), new Number(3))
                 )],
                 'stmt' => new PhpEcho([new PhpPlus(
                     new PhpInt(5),
@@ -109,8 +114,8 @@ class EchoTest extends TestCase
                 )]),
             ],
             'minus' => [
-                'expected' => [PrintFactory::createWithNumber(
-                    new RustBinaryOp('-', new RustNumber(5), new RustNumber(3))
+                'expected' => [PrintFactory::createWithExpr(
+                    new BinaryOp('-', new Number(5), new Number(3))
                 )],
                 'stmt' => new PhpEcho([
                     new PhpMinus(
@@ -120,11 +125,11 @@ class EchoTest extends TestCase
                 ]),
             ],
             'nested_binary_op' => [
-                'expected' => [PrintFactory::createWithNumber(
-                    new RustBinaryOp(
+                'expected' => [PrintFactory::createWithExpr(
+                    new BinaryOp(
                         '+',
-                        new RustBinaryOp('+', new RustNumber(3), new RustNumber(4)),
-                        new RustNumber(5)
+                        new BinaryOp('+', new Number(3), new Number(4)),
+                        new Number(5)
                     )
                 )],
                 'stmt' => new PhpEcho([
@@ -135,10 +140,10 @@ class EchoTest extends TestCase
                 ]),
             ],
             'ternary_number' => [
-                'expected' => [new RustMacroCall(
+                'expected' => [new MacroCall(
                     'print',
                     new StrRef('{}'),
-                    new RustIf(new RustBool(true), new RustNumber(5), new RustNumber(3))
+                    new If_($trueToBool, new Number(5), new Number(3))
                 )],
                 'stmt' => new PhpEcho([new PhpTernary(
                     new PhpConstFetch(new PhpName('true')),
@@ -147,10 +152,10 @@ class EchoTest extends TestCase
                 )]),
             ],
             'ternary_string' => [
-                'expected' => [new RustMacroCall(
+                'expected' => [new MacroCall(
                     'print',
                     StrRef::placeholder(),
-                    new RustIf(new RustBool(true), new StrRef('true'), new StrRef('false'))
+                    new If_(new Bool_(true), new StrRef('true'), new StrRef('false'))
                 )],
                 'stmt' => new PhpEcho([new PhpTernary(
                     new PhpConstFetch(new PhpName('true')),
@@ -159,11 +164,11 @@ class EchoTest extends TestCase
                 )]),
             ],
             'equal' => [
-                'expected' => [new RustMacroCall(
+                'expected' => [new MacroCall(
                     'print',
                     StrRef::placeholder(),
-                    new RustIf(
-                        new RustBinaryOp('==', new RustNumber(5), new RustNumber(3)),
+                    new If_(
+                        new BinaryOp('==', new Number(5), new Number(3)),
                         new StrRef('equal'),
                         new StrRef('not equal')
                     )

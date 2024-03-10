@@ -2,7 +2,7 @@
 
 namespace Jaunas\PhpCompiler\Tests\Node\Expr;
 
-use Jaunas\PhpCompiler\Node\Expr\Number;
+use Jaunas\PhpCompiler\Node\Expr\Value\Number;
 use Jaunas\PhpCompiler\Node\Expr\BinaryOp;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -28,10 +28,10 @@ class BinaryOpTest extends TestCase
     public static function numberPairsProvider(): array
     {
         return [
-            '5 + 3' => ['5_f64 + 3_f64', '+', 5, 3],
-            '3 + 14' => ['3_f64 + 14_f64', '+', 3, 14],
-            '5 - 3' => ['5_f64 - 3_f64', '-', 5, 3],
-            '5 * 3' => ['5_f64 * 3_f64', '*', 5, 3],
+            '5 + 3' => ['rust_php::Value::Number(5_f64) + rust_php::Value::Number(3_f64)', '+', 5, 3],
+            '3 + 14' => ['rust_php::Value::Number(3_f64) + rust_php::Value::Number(14_f64)', '+', 3, 14],
+            '5 - 3' => ['rust_php::Value::Number(5_f64) - rust_php::Value::Number(3_f64)', '-', 5, 3],
+            '5 * 3' => ['rust_php::Value::Number(5_f64) * rust_php::Value::Number(3_f64)', '*', 5, 3],
         ];
     }
 
@@ -42,6 +42,9 @@ class BinaryOpTest extends TestCase
         $right = new Number(5);
 
         $nested = new BinaryOp('+', $left, $right);
-        $this->assertEquals('(3_f64 + 4_f64) + 5_f64', $nested->getSource());
+        $this->assertEquals(
+            '(rust_php::Value::Number(3_f64) + rust_php::Value::Number(4_f64)) + rust_php::Value::Number(5_f64)',
+            $nested->getSource()
+        );
     }
 }
