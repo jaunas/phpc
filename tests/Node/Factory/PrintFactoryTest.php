@@ -44,19 +44,28 @@ class PrintFactoryTest extends TestCase
     }
 
     #[Test]
-    public function createPrintWithStringValue(): void
+    public function createWithString(): void
     {
-        $expected = new MacroCall('print', StrRef::placeholder(), String_::fromString('test string'));
+        $expected = new MacroCall('print', new StrRef('test string'));
         $print = PrintFactory::createWithString('test string');
 
         $this->assertEquals($expected, $print);
     }
 
     #[Test]
-    public function createPrintWithNumberValue(): void
+    public function createPrintWithStringValue(): void
+    {
+        $expected = new MacroCall('print', StrRef::placeholder(), String_::fromString('test string'));
+        $print = PrintFactory::createWithStringValue('test string');
+
+        $this->assertEquals($expected, $print);
+    }
+
+    #[Test]
+    public function createPrintWithNumber(): void
     {
         $expected = new MacroCall('print', StrRef::placeholder(), new Number(5));
-        $print = PrintFactory::createWithNumberValue(5);
+        $print = PrintFactory::createWithNumber(5);
 
         $this->assertEquals($expected, $print);
     }

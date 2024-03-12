@@ -3,12 +3,13 @@
 namespace Jaunas\PhpCompiler\Visitor;
 
 use Jaunas\PhpCompiler\Node\Expr\Expr;
+use Jaunas\PhpCompiler\Node\Expr\FnCall;
 use Jaunas\PhpCompiler\Node\Expr\If_;
 use Jaunas\PhpCompiler\Node\Expr\BinaryOp;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
 use Jaunas\PhpCompiler\Node\Expr\Value\Bool_;
 use Jaunas\PhpCompiler\Node\Expr\Value\Number;
-use Jaunas\PhpCompiler\Node\Factory\PrintFactory;
+use Jaunas\PhpCompiler\Node\Expr\Value\String_;
 use Jaunas\PhpCompiler\Node\Fn_;
 use Jaunas\PhpCompiler\Node\MacroCall;
 use PhpParser\Node;
@@ -31,50 +32,36 @@ class Echo_ extends NodeVisitorAbstract
     public function enterNode(Node $node): null
     {
         if ($node instanceof PhpEcho) {
-            foreach ($node->exprs as $expr) {
-                foreach ($this->getMacroCalls($expr) as $macroCall) {
-                    $this->fn->addToBody($macroCall);
+            $expressions = [];
+
+            foreach ($node->exprs as $phpExpr) {
+                if ($phpExpr instanceof PhpExpr) {
+                    $expr = $this->getExpr($phpExpr);
+                    if ($expr instanceof Expr) {
+                        $expressions[] = $expr;
+                    }
                 }
             }
+
+            $placeholder = str_repeat('{}', count($expressions));
+            $this->fn->addToBody(new MacroCall('print', new StrRef($placeholder), ...$expressions));
         }
 
         return null;
     }
 
-    /**
-     * @return MacroCall[]
-     */
-    private function getMacroCalls(Node $node): array
-    {
-        if ($node instanceof PhpConcat) {
-            return [...$this->getMacroCalls($node->left), ...$this->getMacroCalls($node->right)];
-        } elseif ($node instanceof PhpTernary) {
-            $condition = $this->getExpr($node->cond);
-            $then = $this->getExpr($node->if);
-            $else = $this->getExpr($node->else);
-            if ($condition instanceof Expr && $then instanceof Expr && $else instanceof Expr) {
-                return [new MacroCall('print', StrRef::placeholder(), new If_($condition, $then, $else))];
-            }
-        } elseif ($node instanceof PhpString) {
-            return [PrintFactory::createWithString($node->value)];
-        } elseif ($node instanceof PhpInt) {
-            return [PrintFactory::createWithNumberValue($node->value)];
-        } elseif (
-            $node instanceof PhpBinaryOp
-        ) {
-            $expr = $this->getExpr($node);
-            if ($expr instanceof Expr) {
-                return [PrintFactory::createWithExpr($expr)];
-            }
-        }
-
-        return [];
-    }
-
     private function getExpr(?PhpExpr $node): ?Expr
     {
+        if ($node instanceof PhpConcat) {
+            return $this->getConcatExpr($node);
+        }
+
+        if ($node instanceof PhpTernary) {
+            return $this->getIfExpr($node);
+        }
+
         if ($node instanceof PhpString) {
-            return new StrRef($node->value);
+            return String_::fromString($node->value);
         }
 
         if ($node instanceof PhpInt) {
@@ -82,17 +69,45 @@ class Echo_ extends NodeVisitorAbstract
         }
 
         if ($node instanceof PhpBinaryOp) {
-            return $this->getPhpBinaryOpExpr($node);
+            return $this->getBinaryOpExpr($node);
         }
 
         if ($node instanceof PhpConstFetch) {
-            return $this->getConstFetchExpr($node);
+            return $this->getBoolExpr($node);
         }
 
         return null;
     }
 
-    private function getPhpBinaryOpExpr(PhpBinaryOp $node): ?BinaryOp
+    private function getConcatExpr(PhpConcat $node): ?FnCall
+    {
+        $left = $this->getExpr($node->left);
+        $right = $this->getExpr($node->right);
+
+        if (!$left instanceof Expr || !$right instanceof Expr) {
+            return null;
+        }
+
+        $fnCall = new FnCall('concat', [$right]);
+        $fnCall->setSubject($left);
+
+        return $fnCall;
+    }
+
+    private function getIfExpr(PhpTernary $node): ?If_
+    {
+        $condition = $this->getExpr($node->cond);
+        $then = $this->getExpr($node->if);
+        $else = $this->getExpr($node->else);
+
+        if (!$condition instanceof Expr || !$then instanceof Expr || !$else instanceof Expr) {
+            return null;
+        }
+
+        return new If_($condition, $then, $else);
+    }
+
+    private function getBinaryOpExpr(PhpBinaryOp $node): ?BinaryOp
     {
         $left = $this->getExpr($node->left);
         $right = $this->getExpr($node->right);
@@ -103,7 +118,7 @@ class Echo_ extends NodeVisitorAbstract
         return null;
     }
 
-    private function getConstFetchExpr(PhpConstFetch $node): ?Bool_
+    private function getBoolExpr(PhpConstFetch $node): ?Bool_
     {
         $name = $node->name->name;
         if ($name == 'true') {
