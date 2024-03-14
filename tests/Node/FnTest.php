@@ -2,8 +2,8 @@
 
 namespace Jaunas\PhpCompiler\Tests\Node;
 
+use Jaunas\PhpCompiler\Node\Expr\MacroCall;
 use Jaunas\PhpCompiler\Node\Fn_;
-use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -11,7 +11,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Fn_::class)]
-#[UsesClass(RustMacroCall::class)]
+#[UsesClass(MacroCall::class)]
 class FnTest extends TestCase
 {
     /**
@@ -50,8 +50,8 @@ class FnTest extends TestCase
     public function fnWithStatementGetBody(): void
     {
         $fn = new Fn_('main');
-        $println = new RustMacroCall('println');
-        $fn->addToBody($println);
+        $println = new MacroCall('println');
+        $fn->addStatement($println);
         $this->assertCount(1, $fn->getBody());
 
         $this->assertEquals($println, $fn->getBody()[0]);
@@ -69,8 +69,8 @@ class FnTest extends TestCase
     public function fnWithStatementPrint(): void
     {
         $fn = new Fn_('main');
-        $println = new RustMacroCall('println');
-        $fn->addToBody($println);
+        $println = new MacroCall('println');
+        $fn->addStatement($println);
 
         $this->assertEquals("fn main() {\nprintln!();\n}\n", $fn->getSource());
     }

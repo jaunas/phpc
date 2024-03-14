@@ -3,12 +3,12 @@
 namespace Jaunas\PhpCompiler\Node\Factory;
 
 use Jaunas\PhpCompiler\Node\Expr\Expr;
+use Jaunas\PhpCompiler\Node\Expr\MacroCall;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
 use Jaunas\PhpCompiler\Node\Expr\Value\Null_;
 use Jaunas\PhpCompiler\Node\Expr\Value\Number;
 use Jaunas\PhpCompiler\Node\Expr\Value\String_;
 use Jaunas\PhpCompiler\Node\Expr\Value\Value;
-use Jaunas\PhpCompiler\Node\MacroCall;
 
 class PrintFactory
 {

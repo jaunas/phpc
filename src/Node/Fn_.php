@@ -2,11 +2,11 @@
 
 namespace Jaunas\PhpCompiler\Node;
 
+use Jaunas\PhpCompiler\Node\Expr\Expr;
+
 class Fn_ implements Node
 {
-    /**
-     * @var MacroCall[]
-     */
+    /** @var Expr[] */
     private array $body = [];
 
     public function __construct(private readonly string $name)
@@ -18,13 +18,13 @@ class Fn_ implements Node
         return $this->name;
     }
 
-    public function addToBody(MacroCall $println): void
+    public function addStatement(Expr $statement): void
     {
-        $this->body[] = $println;
+        $this->body[] = $statement;
     }
 
     /**
-     * @return MacroCall[]
+     * @return Expr[]
      */
     public function getBody(): array
     {
@@ -34,8 +34,8 @@ class Fn_ implements Node
     public function getSource(): string
     {
         $body = '';
-        foreach ($this->body as $macroCall) {
-            $body .= $macroCall->getSource();
+        foreach ($this->body as $statement) {
+            $body .= $statement->getSource() . ";\n";
         }
 
         return "fn {$this->getName()}() {\n{$body}}\n";

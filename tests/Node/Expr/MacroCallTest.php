@@ -1,12 +1,12 @@
 <?php
 
-namespace Jaunas\PhpCompiler\Tests\Node;
+namespace Jaunas\PhpCompiler\Tests\Node\Expr;
 
+use Jaunas\PhpCompiler\Node\Expr\MacroCall;
+use Jaunas\PhpCompiler\Node\Expr\StrRef;
 use Jaunas\PhpCompiler\Node\Expr\Value\Null_;
 use Jaunas\PhpCompiler\Node\Expr\Value\Number;
-use Jaunas\PhpCompiler\Node\Expr\StrRef;
 use Jaunas\PhpCompiler\Node\Expr\Value\String_;
-use Jaunas\PhpCompiler\Node\MacroCall;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -33,11 +33,11 @@ class MacroCallTest extends TestCase
     {
         return [
             'println' => [
-                'expected' => "println!();\n",
+                'expected' => "println!()",
                 'name' => 'println',
             ],
             'format' => [
-                'expected' => "format!();\n",
+                'expected' => "format!()",
                 'name' => 'format',
             ],
         ];
@@ -58,10 +58,10 @@ class MacroCallTest extends TestCase
     {
         $data = self::nameProvider();
 
-        $data['println']['expected'] = "println!(\"Hello, world!\");\n";
+        $data['println']['expected'] = "println!(\"Hello, world!\")";
         $data['println']['argument'] = 'Hello, world!';
 
-        $data['format']['expected'] = "format!(\"Example string\");\n";
+        $data['format']['expected'] = "format!(\"Example string\")";
         $data['format']['argument'] = 'Example string';
 
         return $data;
@@ -71,7 +71,7 @@ class MacroCallTest extends TestCase
     public function canPassTwoArguments(): void
     {
         $macroCall = new MacroCall('print', StrRef::placeholder(), new Number(5));
-        $this->assertEquals("print!(\"{}\", rust_php::Value::Number(5_f64));\n", $macroCall->getSource());
+        $this->assertEquals("print!(\"{}\", rust_php::Value::Number(5_f64))", $macroCall->getSource());
     }
 
     #[Test]
@@ -82,7 +82,7 @@ class MacroCallTest extends TestCase
 
         $macroCall = new MacroCall('print', new StrRef('{}{}'), $string, $null);
 
-        $expected = "print!(\"{}{}\", rust_php::Value::String(\"null value: \".to_string()), rust_php::Value::Null);\n";
+        $expected = "print!(\"{}{}\", rust_php::Value::String(\"null value: \".to_string()), rust_php::Value::Null)";
         $this->assertEquals($expected, $macroCall->getSource());
     }
 }

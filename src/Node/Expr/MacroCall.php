@@ -1,11 +1,8 @@
 <?php
 
-namespace Jaunas\PhpCompiler\Node;
+namespace Jaunas\PhpCompiler\Node\Expr;
 
-use Jaunas\PhpCompiler\Node\Expr\Expr;
-use Jaunas\PhpCompiler\Node\Expr\StrRef;
-
-readonly class MacroCall implements Node
+readonly class MacroCall implements Expr
 {
     /** @var Expr[] */
     private array $arguments;
@@ -29,6 +26,6 @@ readonly class MacroCall implements Node
             $arguments[] = $argument->getSource();
         }
 
-        return sprintf("%s!(%s);\n", $this->name, implode(', ', $arguments));
+        return sprintf("%s!(%s)", $this->name, implode(', ', $arguments));
     }
 }

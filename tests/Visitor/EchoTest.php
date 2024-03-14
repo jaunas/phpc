@@ -3,15 +3,16 @@
 namespace Jaunas\PhpCompiler\Tests\Visitor;
 
 use Jaunas\PhpCompiler\Node\Expr\BinaryOp;
+use Jaunas\PhpCompiler\Node\Expr\Expr;
 use Jaunas\PhpCompiler\Node\Expr\FnCall;
 use Jaunas\PhpCompiler\Node\Expr\If_;
+use Jaunas\PhpCompiler\Node\Expr\MacroCall;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
 use Jaunas\PhpCompiler\Node\Expr\Value\Bool_;
 use Jaunas\PhpCompiler\Node\Expr\Value\Number;
 use Jaunas\PhpCompiler\Node\Expr\Value\String_;
 use Jaunas\PhpCompiler\Node\Factory\PrintFactory;
 use Jaunas\PhpCompiler\Node\Fn_;
-use Jaunas\PhpCompiler\Node\MacroCall;
 use Jaunas\PhpCompiler\Visitor\Echo_ as EchoVisitor;
 use PhpParser\Node\Expr\BinaryOp\Concat as PhpConcat;
 use PhpParser\Node\Expr\BinaryOp\Equal as PhpEqual;
@@ -46,13 +47,13 @@ class EchoTest extends TestCase
 {
     #[Test]
     #[DataProvider('echoProvider')]
-    public function addsPrintToFn(?MacroCall $expected, Stmt $stmt): void
+    public function addsPrintToFn(?Expr $expected, Stmt $stmt): void
     {
         $main = new Fn_('main');
         $visitor = new EchoVisitor($main);
         $visitor->enterNode($stmt);
 
-        if ($expected instanceof MacroCall) {
+        if ($expected instanceof Expr) {
             $this->assertCount(1, $main->getBody());
             $this->assertEquals($expected, $main->getBody()[0]);
         } else {
@@ -62,7 +63,7 @@ class EchoTest extends TestCase
 
     /**
      * @return array<string, array{
-     *     expected: ?MacroCall,
+     *     expected: ?Expr,
      *     stmt: Stmt
      * }>
      */

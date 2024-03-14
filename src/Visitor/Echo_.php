@@ -2,16 +2,16 @@
 
 namespace Jaunas\PhpCompiler\Visitor;
 
+use Jaunas\PhpCompiler\Node\Expr\BinaryOp;
 use Jaunas\PhpCompiler\Node\Expr\Expr;
 use Jaunas\PhpCompiler\Node\Expr\FnCall;
 use Jaunas\PhpCompiler\Node\Expr\If_;
-use Jaunas\PhpCompiler\Node\Expr\BinaryOp;
+use Jaunas\PhpCompiler\Node\Expr\MacroCall;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
 use Jaunas\PhpCompiler\Node\Expr\Value\Bool_;
 use Jaunas\PhpCompiler\Node\Expr\Value\Number;
 use Jaunas\PhpCompiler\Node\Expr\Value\String_;
 use Jaunas\PhpCompiler\Node\Fn_;
-use Jaunas\PhpCompiler\Node\MacroCall;
 use PhpParser\Node;
 use PhpParser\Node\Expr as PhpExpr;
 use PhpParser\Node\Expr\BinaryOp as PhpBinaryOp;
@@ -44,7 +44,7 @@ class Echo_ extends NodeVisitorAbstract
             }
 
             $placeholder = str_repeat('{}', count($expressions));
-            $this->fn->addToBody(new MacroCall('print', new StrRef($placeholder), ...$expressions));
+            $this->fn->addStatement(new MacroCall('print', new StrRef($placeholder), ...$expressions));
         }
 
         return null;

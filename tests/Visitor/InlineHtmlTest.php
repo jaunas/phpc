@@ -2,9 +2,9 @@
 
 namespace Jaunas\PhpCompiler\Tests\Visitor;
 
+use Jaunas\PhpCompiler\Node\Expr\MacroCall;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
-use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
-use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
+use Jaunas\PhpCompiler\Node\Fn_;
 use Jaunas\PhpCompiler\Visitor\InlineHtml as InlineHtmlVisitor;
 use PhpParser\Node\Stmt\Function_ as PhpFunction;
 use PhpParser\Node\Stmt\InlineHTML as PhpInlineHTML;
@@ -15,14 +15,14 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(InlineHtmlVisitor::class)]
 #[UsesClass(StrRef::class)]
-#[UsesClass(RustFn::class)]
-#[UsesClass(RustMacroCall::class)]
+#[UsesClass(Fn_::class)]
+#[UsesClass(MacroCall::class)]
 class InlineHtmlTest extends TestCase
 {
     #[Test]
     public function doesNothingWhenDontMatch(): void
     {
-        $main = new RustFn('main');
+        $main = new Fn_('main');
 
         $visitor = new InlineHtmlVisitor($main);
         $visitor->enterNode(new PhpFunction('customFunction'));
@@ -33,13 +33,13 @@ class InlineHtmlTest extends TestCase
     #[Test]
     public function addsPrintToFn(): void
     {
-        $main = new RustFn('main');
+        $main = new Fn_('main');
 
         $visitor = new InlineHtmlVisitor($main);
         $visitor->enterNode(new PhpInlineHTML('example text'));
 
         $this->assertCount(1, $main->getBody());
         $print = $main->getBody()[0];
-        $this->assertEquals("print!(\"example text\");\n", $print->getSource());
+        $this->assertEquals("print!(\"example text\")", $print->getSource());
     }
 }

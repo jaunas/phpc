@@ -2,9 +2,9 @@
 
 namespace Jaunas\PhpCompiler\Tests;
 
+use Jaunas\PhpCompiler\Node\Expr\MacroCall;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
-use Jaunas\PhpCompiler\Node\Fn_ as RustFn;
-use Jaunas\PhpCompiler\Node\MacroCall as RustMacroCall;
+use Jaunas\PhpCompiler\Node\Fn_;
 use Jaunas\PhpCompiler\Translator;
 use Jaunas\PhpCompiler\Visitor\Echo_ as EchoVisitor;
 use Jaunas\PhpCompiler\Visitor\InlineHtml as InlineHtmlVisitor;
@@ -17,9 +17,9 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(Translator::class)]
-#[UsesClass(RustFn::class)]
+#[UsesClass(Fn_::class)]
 #[UsesClass(StrRef::class)]
-#[UsesClass(RustMacroCall::class)]
+#[UsesClass(MacroCall::class)]
 #[UsesClass(EchoVisitor::class)]
 #[UsesClass(InlineHtmlVisitor::class)]
 class TranslatorTest extends TestCase
@@ -30,7 +30,7 @@ class TranslatorTest extends TestCase
         $translator = new Translator();
 
         $main = $translator->translate([]);
-        $this->assertInstanceOf(RustFn::class, $main);
+        $this->assertInstanceOf(Fn_::class, $main);
         $this->assertEquals('main', $main->getName());
     }
 
@@ -63,7 +63,7 @@ class TranslatorTest extends TestCase
     {
         return [
             'text_only' => [
-                'expected' => ["print!(\"Example text\");\n"],
+                'expected' => ["print!(\"Example text\")"],
                 'rootAst' => new PhpInlineHtml('Example text'),
             ],
         ];
