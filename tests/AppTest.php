@@ -56,7 +56,8 @@ class AppTest extends TestCase
         $this->generateTranslatedScript('empty');
 
         $rustScriptPath = $this->getScriptPath('empty', 'rs');
-        $this->assertStringEqualsFile($rustScriptPath, "fn main() {\n}\n");
+        $expected = "use rust_php::*;\nuse rust_php::functions::Function;\nfn main() {\n}\n";
+        $this->assertStringEqualsFile($rustScriptPath, $expected);
 
         unlink($rustScriptPath);
     }
@@ -88,7 +89,7 @@ class AppTest extends TestCase
     private function fetchRustResult(string $scriptName): ProcessResult
     {
         $scriptPath = $this->getScriptPath($scriptName, 'rs');
-        $result = new ProcessResult(['cargo', 'run', '-q', '--example', $scriptName], __DIR__ . '/../rust-php');
+        $result = new ProcessResult(['cargo', 'run', '-q', '--example', $scriptName], __DIR__ . '/../rust-php', ['RUSTFLAGS' => '-Awarnings']);
         unlink($scriptPath);
 
         return $result;

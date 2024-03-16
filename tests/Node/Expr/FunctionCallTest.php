@@ -26,9 +26,9 @@ class FunctionCallTest extends TestCase
     {
         return [
             [
-                'expected' => 'rust_php::functions::Echo::call(vec![' .
-                    'rust_php::Value::String("text and number: ".to_string()), ' .
-                    'rust_php::Value::Number(3.14_f64)' .
+                'expected' => 'functions::Echo::call(vec![' .
+                    'Value::String("text and number: ".to_string()), ' .
+                    'Value::Number(3.14_f64)' .
                     '])',
                 'functionName' => 'Echo',
                 'args' => [
@@ -37,7 +37,7 @@ class FunctionCallTest extends TestCase
                 ],
             ],
             [
-                'expected' => 'rust_php::functions::VarDump::call(vec![rust_php::Value::Bool(true)])',
+                'expected' => 'functions::VarDump::call(vec![Value::Bool(true)])',
                 'functionName' => 'VarDump',
                 'args' => [new Bool_(true)],
             ]

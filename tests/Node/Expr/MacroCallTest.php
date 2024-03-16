@@ -71,7 +71,7 @@ class MacroCallTest extends TestCase
     public function canPassTwoArguments(): void
     {
         $macroCall = new MacroCall('print', StrRef::placeholder(), new Number(5));
-        $this->assertEquals("print!(\"{}\", rust_php::Value::Number(5_f64))", $macroCall->getSource());
+        $this->assertEquals("print!(\"{}\", Value::Number(5_f64))", $macroCall->getSource());
     }
 
     #[Test]
@@ -82,7 +82,7 @@ class MacroCallTest extends TestCase
 
         $macroCall = new MacroCall('print', new StrRef('{}{}'), $string, $null);
 
-        $expected = "print!(\"{}{}\", rust_php::Value::String(\"null value: \".to_string()), rust_php::Value::Null)";
+        $expected = "print!(\"{}{}\", Value::String(\"null value: \".to_string()), Value::Null)";
         $this->assertEquals($expected, $macroCall->getSource());
     }
 }

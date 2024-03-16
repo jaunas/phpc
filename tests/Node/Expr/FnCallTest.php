@@ -23,7 +23,7 @@ class FnCallTest extends TestCase
         $fnCall = new FnCall('to_bool');
         $fnCall->setSubject(new Bool_(true));
 
-        $this->assertEquals('rust_php::Value::Bool(true).to_bool()', $fnCall->getSource());
+        $this->assertEquals('Value::Bool(true).to_bool()', $fnCall->getSource());
     }
 
     #[Test]
@@ -33,7 +33,7 @@ class FnCallTest extends TestCase
         $fnCall->setSubject(String_::fromString('text 1, '));
 
         $this->assertEquals(
-            'rust_php::Value::String("text 1, ".to_string()).concat(rust_php::Value::String("text 2".to_string()))',
+            'Value::String("text 1, ".to_string()).concat(Value::String("text 2".to_string()))',
             $fnCall->getSource()
         );
     }

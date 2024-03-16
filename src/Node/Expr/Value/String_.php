@@ -12,7 +12,7 @@ readonly class String_ implements Value
 
     public function getSource(): string
     {
-        return sprintf("rust_php::Value::String(%s.to_string())", $this->content->getSource());
+        return sprintf("Value::String(%s.to_string())", $this->content->getSource());
     }
 
     public static function fromString(string $string): self

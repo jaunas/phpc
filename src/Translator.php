@@ -3,6 +3,8 @@
 namespace Jaunas\PhpCompiler;
 
 use Jaunas\PhpCompiler\Node\Fn_;
+use Jaunas\PhpCompiler\Node\Mod;
+use Jaunas\PhpCompiler\Node\Use_;
 use Jaunas\PhpCompiler\Visitor\Echo_;
 use Jaunas\PhpCompiler\Visitor\InlineHtml;
 use PhpParser\Node\Stmt;
@@ -26,9 +28,15 @@ class Translator
     /**
      * @param Stmt[] $array
      */
-    public function translate(array $array): Fn_
+    public function translate(array $array): Mod
     {
         $this->traverser->traverse($array);
-        return $this->main;
+
+        $mainMod = new Mod();
+        $mainMod->addStatement(new Use_(['rust_php', '*']));
+        $mainMod->addStatement(new Use_(['rust_php', 'functions', 'Function']));
+        $mainMod->addStatement($this->main);
+
+        return $mainMod;
     }
 }

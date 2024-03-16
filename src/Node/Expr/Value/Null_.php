@@ -6,6 +6,6 @@ readonly class Null_ implements Value
 {
     public function getSource(): string
     {
-        return 'rust_php::Value::Null';
+        return 'Value::Null';
     }
 }

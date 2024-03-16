@@ -14,6 +14,6 @@ class NumberTest extends TestCase
     public function getSource(): void
     {
         $number = new Number(3.14);
-        $this->assertEquals('rust_php::Value::Number(3.14_f64)', $number->getSource());
+        $this->assertEquals('Value::Number(3.14_f64)', $number->getSource());
     }
 }

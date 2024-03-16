@@ -26,11 +26,11 @@ class BoolTest extends TestCase
     {
         return [
             'true' => [
-                'expected' => 'rust_php::Value::Bool(true)',
+                'expected' => 'Value::Bool(true)',
                 'value' => true,
             ],
             'false' => [
-                'expected' => 'rust_php::Value::Bool(false)',
+                'expected' => 'Value::Bool(false)',
                 'value' => false,
             ],
         ];

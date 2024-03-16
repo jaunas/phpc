@@ -29,11 +29,11 @@ class StringTest extends TestCase
     {
         return [
             'empty' => [
-                'expected' => 'rust_php::Value::String("".to_string())',
+                'expected' => 'Value::String("".to_string())',
                 'content' => new StrRef(''),
             ],
             'withContent' => [
-                'expected' => 'rust_php::Value::String("string content".to_string())',
+                'expected' => 'Value::String("string content".to_string())',
                 'content' => new StrRef('string content'),
             ],
         ];

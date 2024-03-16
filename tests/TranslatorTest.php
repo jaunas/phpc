@@ -5,6 +5,7 @@ namespace Jaunas\PhpCompiler\Tests;
 use Jaunas\PhpCompiler\Node\Expr\MacroCall;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
 use Jaunas\PhpCompiler\Node\Fn_;
+use Jaunas\PhpCompiler\Node\Mod;
 use Jaunas\PhpCompiler\Translator;
 use Jaunas\PhpCompiler\Visitor\Echo_ as EchoVisitor;
 use Jaunas\PhpCompiler\Visitor\InlineHtml as InlineHtmlVisitor;
@@ -29,43 +30,20 @@ class TranslatorTest extends TestCase
     {
         $translator = new Translator();
 
-        $main = $translator->translate([]);
-        $this->assertInstanceOf(Fn_::class, $main);
-        $this->assertEquals('main', $main->getName());
+        $mainMod = $translator->translate([]);
+        $this->assertInstanceOf(Mod::class, $mainMod);
+
+        $expected = "use rust_php::*;\nuse rust_php::functions::Function;\nfn main() {\n}\n";
+        $this->assertEquals($expected, $mainMod->getSource());
     }
 
-    /**
-     * @param string[] $expected
-     */
     #[Test]
-    #[DataProvider('stringToPrintProvider')]
-    public function echoTranslatesToPrint(array $expected, Stmt $rootAst): void
+    public function echoTranslatesToPrint(): void
     {
         $translator = new Translator();
-        $ast = $translator->translate([$rootAst])->getBody();
-        $this->assertCount(count($expected), $ast);
+        $source = $translator->translate([new PhpInlineHtml('Example text')])->getSource();
 
-        $prints = [];
-        foreach ($ast as $print) {
-            $prints[] = $print->getSource();
-        }
-
-        $this->assertEquals($expected, $prints);
-    }
-
-    /**
-     * @return array<string, array{
-     *     expected: string[],
-     *     rootAst: Stmt
-     * }>
-     */
-    public static function stringToPrintProvider(): array
-    {
-        return [
-            'text_only' => [
-                'expected' => ["print!(\"Example text\")"],
-                'rootAst' => new PhpInlineHtml('Example text'),
-            ],
-        ];
+        $expected = "use rust_php::*;\nuse rust_php::functions::Function;\nfn main() {\nprint!(\"Example text\");\n}\n";
+        $this->assertEquals($expected, $source);
     }
 }

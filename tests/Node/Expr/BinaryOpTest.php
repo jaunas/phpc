@@ -28,10 +28,10 @@ class BinaryOpTest extends TestCase
     public static function numberPairsProvider(): array
     {
         return [
-            '5 + 3' => ['rust_php::Value::Number(5_f64) + rust_php::Value::Number(3_f64)', '+', 5, 3],
-            '3 + 14' => ['rust_php::Value::Number(3_f64) + rust_php::Value::Number(14_f64)', '+', 3, 14],
-            '5 - 3' => ['rust_php::Value::Number(5_f64) - rust_php::Value::Number(3_f64)', '-', 5, 3],
-            '5 * 3' => ['rust_php::Value::Number(5_f64) * rust_php::Value::Number(3_f64)', '*', 5, 3],
+            '5 + 3' => ['Value::Number(5_f64) + Value::Number(3_f64)', '+', 5, 3],
+            '3 + 14' => ['Value::Number(3_f64) + Value::Number(14_f64)', '+', 3, 14],
+            '5 - 3' => ['Value::Number(5_f64) - Value::Number(3_f64)', '-', 5, 3],
+            '5 * 3' => ['Value::Number(5_f64) * Value::Number(3_f64)', '*', 5, 3],
         ];
     }
 
@@ -43,7 +43,7 @@ class BinaryOpTest extends TestCase
 
         $nested = new BinaryOp('+', $left, $right);
         $this->assertEquals(
-            '(rust_php::Value::Number(3_f64) + rust_php::Value::Number(4_f64)) + rust_php::Value::Number(5_f64)',
+            '(Value::Number(3_f64) + Value::Number(4_f64)) + Value::Number(5_f64)',
             $nested->getSource()
         );
     }

@@ -14,6 +14,6 @@ readonly class FunctionCall implements Expr
     public function getSource(): string
     {
         $args = implode(', ', array_map(fn ($value) => $value->getSource(), $this->args));
-        return sprintf("rust_php::functions::%s::call(vec![%s])", $this->functionName, $args);
+        return sprintf("functions::%s::call(vec![%s])", $this->functionName, $args);
     }
 }

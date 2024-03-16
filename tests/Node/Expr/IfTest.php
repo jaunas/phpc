@@ -34,8 +34,8 @@ class IfTest extends TestCase
     public static function stringProvider(): array
     {
         return [
-            ['if rust_php::Value::Bool(true).to_bool() { "true" } else { "false" }', true, 'true', 'false'],
-            ['if rust_php::Value::Bool(false).to_bool() { "false" } else { "true" }', false, 'false', 'true'],
+            ['if Value::Bool(true).to_bool() { "true" } else { "false" }', true, 'true', 'false'],
+            ['if Value::Bool(false).to_bool() { "false" } else { "true" }', false, 'false', 'true'],
         ];
     }
 
@@ -43,9 +43,7 @@ class IfTest extends TestCase
     public function canPrintWithNumber(): void
     {
         $if = new If_(new Bool_(true), new Number(5), new Number(8));
-        $expected =
-            'if rust_php::Value::Bool(true).to_bool() { rust_php::Value::Number(5_f64) } else { ' .
-            'rust_php::Value::Number(8_f64) }';
+        $expected = 'if Value::Bool(true).to_bool() { Value::Number(5_f64) } else { Value::Number(8_f64) }';
         $this->assertEquals(
             $expected,
             $if->getSource()

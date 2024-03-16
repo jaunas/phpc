@@ -14,6 +14,6 @@ class NullTest extends TestCase
     public function source(): void
     {
         $null = new Null_();
-        $this->assertEquals('rust_php::Value::Null', $null->getSource());
+        $this->assertEquals('Value::Null', $null->getSource());
     }
 }

@@ -10,6 +10,6 @@ readonly class Bool_ implements Value
 
     public function getSource(): string
     {
-        return sprintf("rust_php::Value::Bool(%s)", $this->value ? 'true' : 'false');
+        return sprintf("Value::Bool(%s)", $this->value ? 'true' : 'false');
     }
 }

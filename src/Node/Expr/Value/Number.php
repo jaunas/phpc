@@ -10,6 +10,6 @@ readonly class Number implements Value
 
     public function getSource(): string
     {
-        return sprintf("rust_php::Value::Number(%s_f64)", $this->value);
+        return sprintf("Value::Number(%s_f64)", $this->value);
     }
 }

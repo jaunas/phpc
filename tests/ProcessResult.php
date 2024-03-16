@@ -15,9 +15,9 @@ class ProcessResult
     /**
      * @param string[] $command
      */
-    public function __construct(array $command, ?string $workingDirectory)
+    public function __construct(array $command, ?string $workingDirectory, ?array $env = null)
     {
-        $process = new Process($command, $workingDirectory);
+        $process = new Process($command, $workingDirectory, $env);
 
         $this->exitCode = $process->run();
         $this->output = $process->getOutput();
