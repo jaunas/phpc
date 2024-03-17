@@ -29,7 +29,7 @@ class FunctionCallTest extends TestCase
                 'expected' => 'functions::Echo::call(vec![' .
                     'Value::String("text and number: ".to_string()), ' .
                     'Value::Number(3.14_f64)' .
-                    '])',
+                    ']).unwrap()',
                 'functionName' => 'Echo',
                 'args' => [
                     String_::fromString('text and number: '),
@@ -37,7 +37,7 @@ class FunctionCallTest extends TestCase
                 ],
             ],
             [
-                'expected' => 'functions::VarDump::call(vec![Value::Bool(true)])',
+                'expected' => 'functions::VarDump::call(vec![Value::Bool(true)]).unwrap()',
                 'functionName' => 'VarDump',
                 'args' => [new Bool_(true)],
             ]

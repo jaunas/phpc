@@ -5,6 +5,7 @@ namespace Jaunas\PhpCompiler\Tests\Visitor;
 use Jaunas\PhpCompiler\Node\Expr\BinaryOp;
 use Jaunas\PhpCompiler\Node\Expr\Expr;
 use Jaunas\PhpCompiler\Node\Expr\FnCall;
+use Jaunas\PhpCompiler\Node\Expr\FunctionCall;
 use Jaunas\PhpCompiler\Node\Expr\If_;
 use Jaunas\PhpCompiler\Node\Expr\MacroCall;
 use Jaunas\PhpCompiler\Node\Expr\StrRef;
@@ -81,28 +82,26 @@ class EchoTest extends TestCase
                 'stmt' => new PhpFunction('custom_function'),
             ],
             'string' => [
-                'expected' => PrintFactory::createWithStringValue('Example text'),
+                'expected' => new FunctionCall('Echo', [String_::fromString('Example text')]),
                 'stmt' => new PhpEcho([new PhpString('Example text')]),
             ],
             'number' => [
-                'expected' => PrintFactory::createWithNumber(5),
+                'expected' => new FunctionCall('Echo', [new Number(5)]),
                 'stmt' => new PhpEcho([new PhpInt(5)]),
             ],
             'concat' => [
-                'expected' => PrintFactory::createWithExpr($concatStrings),
+                'expected' => new FunctionCall('Echo', [$concatStrings]),
                 'stmt' => new PhpEcho([new PhpConcat(
                     new PhpString('first string'),
                     new PhpString('second string')
                 )]),
             ],
             'comma' => [
-                'expected' => new MacroCall(
-                    'print',
-                    new StrRef('{}{}{}'),
+                'expected' => new FunctionCall('Echo', [
                     String_::fromString('string'),
                     new Number(5),
                     String_::fromString('string again')
-                ),
+                ]),
                 'stmt' => new PhpEcho([
                     new PhpString('string'),
                     new PhpInt(5),
@@ -110,18 +109,18 @@ class EchoTest extends TestCase
                 ]),
             ],
             'plus' => [
-                'expected' => PrintFactory::createWithExpr(
+                'expected' => new FunctionCall('Echo', [
                     new BinaryOp('+', new Number(5), new Number(3))
-                ),
+                ]),
                 'stmt' => new PhpEcho([new PhpPlus(
                     new PhpInt(5),
                     new PhpInt(3)
                 )]),
             ],
             'minus' => [
-                'expected' => PrintFactory::createWithExpr(
+                'expected' => new FunctionCall('Echo', [
                     new BinaryOp('-', new Number(5), new Number(3))
-                ),
+                ]),
                 'stmt' => new PhpEcho([
                     new PhpMinus(
                         new PhpInt(5),
@@ -130,13 +129,11 @@ class EchoTest extends TestCase
                 ]),
             ],
             'nested_binary_op' => [
-                'expected' => PrintFactory::createWithExpr(
-                    new BinaryOp(
-                        '+',
-                        new BinaryOp('+', new Number(3), new Number(4)),
-                        new Number(5)
-                    )
-                ),
+                'expected' => new FunctionCall('Echo', [new BinaryOp(
+                    '+',
+                    new BinaryOp('+', new Number(3), new Number(4)),
+                    new Number(5)
+                )]),
                 'stmt' => new PhpEcho([
                     new PhpPlus(
                         new PhpPlus(new PhpInt(3), new PhpInt(4)),
@@ -145,11 +142,11 @@ class EchoTest extends TestCase
                 ]),
             ],
             'ternary_number' => [
-                'expected' => new MacroCall(
-                    'print',
-                    new StrRef('{}'),
-                    new If_($trueToBool, new Number(5), new Number(3))
-                ),
+                'expected' => new FunctionCall('Echo', [new If_(
+                    $trueToBool,
+                    new Number(5),
+                    new Number(3)
+                )]),
                 'stmt' => new PhpEcho([new PhpTernary(
                     new PhpConstFetch(new PhpName('true')),
                     new PhpInt(5),
@@ -157,11 +154,11 @@ class EchoTest extends TestCase
                 )]),
             ],
             'ternary_string' => [
-                'expected' => new MacroCall(
-                    'print',
-                    StrRef::placeholder(),
-                    new If_(new Bool_(true), String_::fromString('true'), String_::fromString('false'))
-                ),
+                'expected' => new FunctionCall('Echo', [new If_(
+                    new Bool_(true),
+                    String_::fromString('true'),
+                    String_::fromString('false')
+                )]),
                 'stmt' => new PhpEcho([new PhpTernary(
                     new PhpConstFetch(new PhpName('true')),
                     new PhpString('true'),
@@ -169,15 +166,11 @@ class EchoTest extends TestCase
                 )]),
             ],
             'equal' => [
-                'expected' => new MacroCall(
-                    'print',
-                    StrRef::placeholder(),
-                    new If_(
-                        new BinaryOp('==', new Number(5), new Number(3)),
-                        String_::fromString('equal'),
-                        String_::fromString('not equal')
-                    )
-                ),
+                'expected' => new FunctionCall('Echo', [new If_(
+                    new BinaryOp('==', new Number(5), new Number(3)),
+                    String_::fromString('equal'),
+                    String_::fromString('not equal')
+                )]),
                 'stmt' => new PhpEcho([new PhpTernary(
                     new PhpEqual(new PhpInt(5), new PhpInt(3)),
                     new PhpString('equal'),

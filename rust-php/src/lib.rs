@@ -3,6 +3,8 @@ use std::{
     ops::{Add, Div, Mul, Sub},
 };
 
+pub mod functions;
+
 #[derive(PartialEq, PartialOrd, Debug, Clone)]
 pub enum Value {
     Null,
