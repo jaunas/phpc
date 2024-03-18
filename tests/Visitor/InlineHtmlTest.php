@@ -40,6 +40,8 @@ class InlineHtmlTest extends TestCase
 
         $this->assertCount(1, $main->getBody());
         $print = $main->getBody()[0];
-        $this->assertEquals("print!(\"example text\")", $print->getSource());
+
+        $expected = 'functions::Echo::call(vec![Value::String("example text".to_string())]).unwrap()';
+        $this->assertEquals($expected, $print->getSource());
     }
 }

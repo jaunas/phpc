@@ -14,6 +14,7 @@ class ProcessResult
 
     /**
      * @param string[] $command
+     * @param array<string, string> $env
      */
     public function __construct(array $command, ?string $workingDirectory, ?array $env = null)
     {

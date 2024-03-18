@@ -43,7 +43,14 @@ class TranslatorTest extends TestCase
         $translator = new Translator();
         $source = $translator->translate([new PhpInlineHtml('Example text')])->getSource();
 
-        $expected = "use rust_php::*;\nuse rust_php::functions::Function;\nfn main() {\nprint!(\"Example text\");\n}\n";
+        $expected = <<<EOF
+use rust_php::*;
+use rust_php::functions::Function;
+fn main() {
+functions::Echo::call(vec![Value::String("Example text".to_string())]).unwrap();
+}
+
+EOF;
         $this->assertEquals($expected, $source);
     }
 }

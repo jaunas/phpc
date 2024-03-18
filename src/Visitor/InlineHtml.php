@@ -2,8 +2,8 @@
 
 namespace Jaunas\PhpCompiler\Visitor;
 
-use Jaunas\PhpCompiler\Node\Expr\MacroCall;
-use Jaunas\PhpCompiler\Node\Expr\StrRef;
+use Jaunas\PhpCompiler\Node\Expr\FunctionCall;
+use Jaunas\PhpCompiler\Node\Expr\Value\String_;
 use Jaunas\PhpCompiler\Node\Fn_;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\InlineHTML as InlineHTMLNode;
@@ -18,7 +18,7 @@ class InlineHtml extends NodeVisitorAbstract
     public function enterNode(Node $node): null
     {
         if ($node instanceof InlineHTMLNode) {
-            $this->main->addStatement(new MacroCall('print', new StrRef($node->value)));
+            $this->main->addStatement(new FunctionCall('Echo', [String_::fromString($node->value)]));
         }
 
         return null;

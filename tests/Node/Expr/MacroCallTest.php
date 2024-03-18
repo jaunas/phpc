@@ -58,10 +58,10 @@ class MacroCallTest extends TestCase
     {
         $data = self::nameProvider();
 
-        $data['println']['expected'] = "println!(\"Hello, world!\")";
+        $data['println']['expected'] = 'println!("Hello, world!")';
         $data['println']['argument'] = 'Hello, world!';
 
-        $data['format']['expected'] = "format!(\"Example string\")";
+        $data['format']['expected'] = 'format!("Example string")';
         $data['format']['argument'] = 'Example string';
 
         return $data;
@@ -71,7 +71,7 @@ class MacroCallTest extends TestCase
     public function canPassTwoArguments(): void
     {
         $macroCall = new MacroCall('print', StrRef::placeholder(), new Number(5));
-        $this->assertEquals("print!(\"{}\", Value::Number(5_f64))", $macroCall->getSource());
+        $this->assertEquals('print!("{}", Value::Number(5_f64))', $macroCall->getSource());
     }
 
     #[Test]
@@ -82,7 +82,7 @@ class MacroCallTest extends TestCase
 
         $macroCall = new MacroCall('print', new StrRef('{}{}'), $string, $null);
 
-        $expected = "print!(\"{}{}\", Value::String(\"null value: \".to_string()), Value::Null)";
+        $expected = 'print!("{}{}", Value::String("null value: ".to_string()), Value::Null)';
         $this->assertEquals($expected, $macroCall->getSource());
     }
 }

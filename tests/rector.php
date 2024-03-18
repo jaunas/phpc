@@ -23,6 +23,7 @@ return static function (RectorConfig $rectorConfig): void {
         JoinStringConcatRector::class => [
             __DIR__ . '/fixtures/concat.php',
             __DIR__ . '/fixtures/echo_expr.php',
+            __DIR__ . '/fixtures/expr.php',
         ]
     ]);
 };

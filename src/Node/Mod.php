@@ -9,7 +9,7 @@ class Mod implements Node
 
     public function getSource(): string
     {
-        return implode('', array_map(fn ($statement) => $statement->getSource(), $this->statements));
+        return implode('', array_map(static fn($statement) => $statement->getSource(), $this->statements));
     }
 
     public function addStatement(Node $statement): void

@@ -89,7 +89,11 @@ class AppTest extends TestCase
     private function fetchRustResult(string $scriptName): ProcessResult
     {
         $scriptPath = $this->getScriptPath($scriptName, 'rs');
-        $result = new ProcessResult(['cargo', 'run', '-q', '--example', $scriptName], __DIR__ . '/../rust-php', ['RUSTFLAGS' => '-Awarnings']);
+        $result = new ProcessResult(
+            ['cargo', 'run', '-q', '--example', $scriptName],
+            __DIR__ . '/../rust-php',
+            ['RUSTFLAGS' => '-Awarnings']
+        );
         unlink($scriptPath);
 
         return $result;
@@ -98,6 +102,10 @@ class AppTest extends TestCase
     private function fetchPhpResult(string $scriptName): ProcessResult
     {
         $scriptPath = $this->getScriptPath($scriptName, 'php');
-        return new ProcessResult(['php', $scriptPath], null);
+        return new ProcessResult(
+            ['php', $scriptPath],
+            null,
+            ['XDEBUG_MODE' => 'off']
+        );
     }
 }

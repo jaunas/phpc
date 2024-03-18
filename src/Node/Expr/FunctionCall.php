@@ -13,7 +13,7 @@ readonly class FunctionCall implements Expr
 
     public function getSource(): string
     {
-        $args = implode(', ', array_map(fn ($value) => $value->getSource(), $this->args));
+        $args = implode(', ', array_map(static fn($value) => $value->getSource(), $this->args));
         return sprintf("functions::%s::call(vec![%s]).unwrap()", $this->functionName, $args);
     }
 }

@@ -6,6 +6,7 @@ use Jaunas\PhpCompiler\Node\Fn_;
 use Jaunas\PhpCompiler\Node\Mod;
 use Jaunas\PhpCompiler\Node\Use_;
 use Jaunas\PhpCompiler\Visitor\Echo_;
+use Jaunas\PhpCompiler\Visitor\FuncCall;
 use Jaunas\PhpCompiler\Visitor\InlineHtml;
 use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
@@ -21,8 +22,9 @@ class Translator
         $this->main = new Fn_('main');
 
         $this->traverser = new NodeTraverser();
-        $this->traverser->addVisitor(new InlineHtml($this->main));
         $this->traverser->addVisitor(new Echo_($this->main));
+        $this->traverser->addVisitor(new FuncCall($this->main));
+        $this->traverser->addVisitor(new InlineHtml($this->main));
     }
 
     /**

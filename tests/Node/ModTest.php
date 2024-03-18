@@ -4,6 +4,7 @@ namespace Jaunas\PhpCompiler\Tests\Node;
 
 use Jaunas\PhpCompiler\Node\Fn_;
 use Jaunas\PhpCompiler\Node\Mod;
+use Jaunas\PhpCompiler\Node\Node;
 use Jaunas\PhpCompiler\Node\Use_;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -13,6 +14,9 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Mod::class)]
 class ModTest extends TestCase
 {
+    /**
+     * @param Node[] $statements
+     */
     #[Test]
     #[DataProvider('sourceProvider')]
     public function sourceWithFn(string $expected, array $statements): void
@@ -21,9 +25,13 @@ class ModTest extends TestCase
         foreach ($statements as $statement) {
             $mod->addStatement($statement);
         }
+
         $this->assertEquals($expected, $mod->getSource());
     }
 
+    /**
+     * @return array<array{expected: string, statements: Node[]}>
+     */
     public static function sourceProvider(): array
     {
         return [
